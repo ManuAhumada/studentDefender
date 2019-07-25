@@ -25,9 +25,9 @@ public class MainMenuScreen implements Screen {
 		game.batch.setProjectionMatrix(camera.combined);
 
 		game.batch.begin();
-		game.font.draw(game.batch, "Student Defender", Gdx.graphics.getWidth() / 2 - 100,
+		game.font.draw(game.batch, "Student Defender", (Gdx.graphics.getWidth() / 2) - 100,
 				Gdx.graphics.getHeight() - 100);
-		game.font.draw(game.batch, "Tap anywhere to begin!", Gdx.graphics.getWidth() / 2 - 100,
+		game.font.draw(game.batch, "Tap anywhere to begin!", (Gdx.graphics.getWidth() / 2) - 100,
 				Gdx.graphics.getHeight() / 2);
 		game.batch.end();
 
