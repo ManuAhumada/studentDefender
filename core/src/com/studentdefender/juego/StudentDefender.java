@@ -1,4 +1,4 @@
-package com.studentdefender.game;
+package com.studentdefender.juego;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;

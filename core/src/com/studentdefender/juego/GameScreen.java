@@ -1,4 +1,4 @@
-package com.studentdefender.game;
+package com.studentdefender.juego;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
