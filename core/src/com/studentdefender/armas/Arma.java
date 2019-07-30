@@ -1,7 +1,7 @@
 package com.studentdefender.armas;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
+import com.studentdefender.personajes.Personaje;
 
 public abstract class Arma {
 	protected int daño;
@@ -18,7 +18,7 @@ public abstract class Arma {
 		this.precio = precio;		
 	}
 	
-	public abstract void atacar(Vector2 posicion, Vector2 objetivo, Array<Bala> balas);
+	public abstract void atacar(Vector2 posicion, float angulo, Personaje atacante);
 	
 	public abstract void recargar();
 	

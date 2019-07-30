@@ -2,8 +2,8 @@ package com.studentdefender.armas;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.studentdefender.personajes.Personaje;
 
 public class Pistola extends Arma {
 	protected int municionTotal;
@@ -25,13 +25,13 @@ public class Pistola extends Arma {
 		this.municionEnArma = 6;
 	}
 	
-	public void atacar(Vector2 posicion, Vector2 objetivo, Array<Bala> balas) {
+	public void atacar(Vector2 posicion, float angulo, Personaje atacante) {
 		if ((TimeUtils.nanoTime() - ultimaVezUsada > cadencia)) {
 			if (this.municionEnArma != 0) {
 				Gdx.app.log("Arma", "Bala disparada");
 				this.municionEnArma--;
 				this.ultimaVezUsada = TimeUtils.nanoTime();		
-				balas.add(new Bala(posicion, objetivo, daño));
+				new Bala(posicion, angulo, daño, atacante);
 			} else {
 				Gdx.app.log("Arma", "No tienes balas");
 			}

@@ -1,72 +1,69 @@
 package com.studentdefender.personajes;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.studentdefender.armas.Arma;
-import com.studentdefender.armas.Bala;
-import com.studentdefender.armas.Pistola;
+import com.studentdefender.juego.GameScreen;
 
-public abstract class Personaje extends Sprite {
+public abstract class Personaje {
 	protected int vida;
 	protected int vidaActual;
 	protected int defensa;
 	protected int velocidad;
 	protected Arma armas[];
 	protected int armaSeleccionada;
+	protected Body body;
 
-	public Personaje() {
-		super(new Texture(Gdx.files.internal("circle.png")));
-		vida = 100;
-		vidaActual = vida;
-		setPosition(0, 0);
-		setRotation(180);
-		defensa = 10;
-		velocidad = 10;
-		armas = new Arma[] { new Pistola() };
-	}
-
-	public Personaje(Sprite imagen, int vida, int defensa, int velocidad, Arma armas[]) {
+	public Personaje(int x, int y, float radio, int vida, int defensa, int velocidad) {
+		body = createCircle(x, y, radio);
 		this.vida = vida;
 		vidaActual = vida;
-		setRotation(180);
 		this.defensa = defensa;
 		this.velocidad = velocidad;
-		this.armas = armas;
+		this.armas = new Arma[2];
 	}
+	
+	private Body createCircle(float x, float y, float radius) {
+        Body pBody;
+        BodyDef def = new BodyDef();
+
+        def.type = BodyDef.BodyType.DynamicBody;
+
+        def.position.set(x, y);
+        def.fixedRotation = true;
+        pBody = GameScreen.world.createBody(def);
+
+        CircleShape shape = new CircleShape();
+        shape.setRadius(radius);
+
+        FixtureDef fd = new FixtureDef();
+        fd.shape = shape;
+        fd.density = 1;
+//        fd.filter.categoryBits = Constants.BIT_PLAYER;
+//        fd.filter.maskBits = Constants.BIT_WALL | Constants.BIT_SENSOR;
+//        fd.filter.groupIndex = 0;
+        pBody.createFixture(fd).setUserData(this);
+        shape.dispose();
+        return pBody;
+    }
 
 	protected abstract void rotar(OrthographicCamera camara);
 
 	protected abstract void mover(float delta);
 
-	protected abstract void atacar(OrthographicCamera camara, Array<Bala> balas);
+	protected abstract void atacar();
 
 	protected abstract void recargar();
 
-	public void actualizar(OrthographicCamera camera, float delta, Array<Bala> balas) {
+	public void actualizar(OrthographicCamera camera, float delta) {
 		rotar(camera);
 		mover(delta);
-		revisarLimites();
 		recargar();
-		atacar(camera, balas);
-	}
-
-	private void revisarLimites() {
-		if (getX() < 0) {
-			setX(0);
-		}
-		if (getX() > (Gdx.graphics.getWidth() - getWidth())) {
-			setX(Gdx.graphics.getWidth() - getWidth());
-		}
-		if (getY() < 0) {
-			setY(0);
-		}
-		if (getY() > (Gdx.graphics.getHeight() - getHeight())) {
-			setY(Gdx.graphics.getHeight() - getHeight());
-		}
+		atacar();
 	}
 
 	public void quitarVida(int vidaQuitada) {
@@ -84,6 +81,6 @@ public abstract class Personaje extends Sprite {
 	}
 
 	public Vector2 getPosicion() {
-		return new Vector2(getX(), getY());
+		return body.getPosition();
 	}
 }

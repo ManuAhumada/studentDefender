@@ -1,25 +1,25 @@
 package com.studentdefender.personajes;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.utils.Array;
-import com.studentdefender.armas.Bala;
+import com.studentdefender.armas.Pistola;
 
 public class Enemigo extends Personaje {
 
+	public Enemigo(int x, int y, float radio) {
+		super(x, y, radio, 100, 10, 100);
+		armas[0] = new Pistola();
+	}
+
 	protected void rotar(OrthographicCamera camara) {
-		rotate(10);
 	}
 
 	protected void mover(float delta) {
-
-	}
-
-	protected void atacar(OrthographicCamera camara, Array<Bala> balas) {
-
 	}
 
 	protected void recargar() {
+	}
 
+	protected void atacar() {
 	}
 
 }
