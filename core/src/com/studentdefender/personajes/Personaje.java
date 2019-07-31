@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.studentdefender.armas.Arma;
 import com.studentdefender.juego.GameScreen;
+import static com.studentdefender.utils.Constants.PPM;
 
 public abstract class Personaje {
 	protected int vida;
@@ -33,12 +34,12 @@ public abstract class Personaje {
 
         def.type = BodyDef.BodyType.DynamicBody;
 
-        def.position.set(x, y);
+        def.position.set(x / PPM, y / PPM);
         def.fixedRotation = true;
         pBody = GameScreen.world.createBody(def);
 
         CircleShape shape = new CircleShape();
-        shape.setRadius(radius);
+        shape.setRadius(radius / PPM);
 
         FixtureDef fd = new FixtureDef();
         fd.shape = shape;
@@ -82,5 +83,9 @@ public abstract class Personaje {
 
 	public Vector2 getPosicion() {
 		return body.getPosition();
+	}
+	
+	public float getRadio() {	
+		return body.getFixtureList().first().getShape().getRadius();
 	}
 }

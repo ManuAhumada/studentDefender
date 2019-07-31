@@ -1,7 +1,8 @@
 package com.studentdefender.armas;
 
+import static com.studentdefender.utils.Constants.PPM;
+
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -9,40 +10,41 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.studentdefender.juego.GameScreen;
-import com.studentdefender.personajes.Personaje;
+import com.studentdefender.personajes.Personaje;;
 
-public class Bala extends Sprite {
+public class Bala {
 	private Personaje disparador;
 	private Body body; 
 	private float radio;
 	private int daño;
 	private int velocidad;
+	private Vector2 direccion;
+	private boolean activa;
 
 	public Bala(Vector2 posicion, float angulo, int daño, Personaje atacante) {
-		velocidad = 10;
-		radio = .5f;
+		activa = true;
+		velocidad = 50;
+		radio = 1f / PPM;
 		this.daño = daño;
-		posicion.add(new Vector2(MathUtils.cos(angulo), MathUtils.sin(angulo)).scl(radio + radio/2 + 16));
+		direccion = new Vector2(MathUtils.cos(angulo), MathUtils.sin(angulo));
+		posicion.add(new Vector2(MathUtils.cos(angulo), MathUtils.sin(angulo)).scl((radio + atacante.getRadio() + .01f)));
 		body = createCircle(posicion, radio, angulo);
-		Gdx.app.log("Bala", "Bala creada en la posicion " + getPosicion() + " con un angulo de " + body.getAngle());
+		GameScreen.activeBullets.add(this);
+		Gdx.app.log("Bala", "Bala creada en la posicion " + getPosicion() + " con un angulo de " + body.getAngle() + 
+				" y una direccion de " + direccion);
 	}
 
 	public void impactar(Object objeto) {
-		if (!objeto.equals(disparador)) {
-			if (objeto instanceof Personaje) {
-				Personaje enemigo = (Personaje) objeto;
-				enemigo.quitarVida(daño);
-			}
-			eliminar();
+		if (objeto instanceof Personaje) {
+			Personaje enemigo = (Personaje) objeto;
+			enemigo.quitarVida(daño);
 		}
-	}
-	
-	public void eliminar() {
-		GameScreen.bodysToEliminate.add(body);
+		activa = false;
 	}
 
-	public Vector2 getPosicion() {
-		return new Vector2(getX(), getY());
+	public void eliminar() {
+		GameScreen.activeBullets.removeValue(this, true);	
+		GameScreen.world.destroyBody(body);
 	}
 	
 	private Body createCircle(Vector2 posicion, float radius, float angle) {
@@ -57,7 +59,7 @@ public class Bala extends Sprite {
         def.bullet = true;
         def.fixedRotation = true;
         
-        def.linearVelocity.set(new Vector2(MathUtils.cos(angle), MathUtils.sin(angle)).scl(velocidad * 1000000));
+        def.linearVelocity.set(new Vector2(MathUtils.cos(angle), MathUtils.sin(angle)).scl(velocidad));
         pBody = GameScreen.world.createBody(def);
 
         CircleShape shape = new CircleShape();
@@ -72,4 +74,12 @@ public class Bala extends Sprite {
         shape.dispose();
         return pBody;	
     }
+	
+	public boolean isActiva() {
+		return activa;
+	}
+	
+	public Vector2 getPosicion() {
+		return body.getPosition();
+	}
 }

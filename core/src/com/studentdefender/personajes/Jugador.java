@@ -7,12 +7,13 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.studentdefender.armas.Pistola;
+import static com.studentdefender.utils.Constants.PPM;
 
 public class Jugador extends Personaje {
 	protected int dinero;
 	
 	public Jugador(int x, int y, float radio) {
-		super(x, y, radio, 100, 10, 100);
+		super(x, y, radio, 100, 10, 200);
 		armas[0] = new Pistola();
 		dinero = 0;
 	}
@@ -29,7 +30,7 @@ public class Jugador extends Personaje {
 		Vector3 mousePosition3D = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
 		camara.unproject(mousePosition3D);
 		Vector2 mousePosition2D =  new Vector2(mousePosition3D.x, mousePosition3D.y);
-		Vector2 toTarget = mousePosition2D.sub(body.getPosition()).nor();
+		Vector2 toTarget = mousePosition2D.sub(body.getPosition().scl(PPM)).nor();
 		float desiredAngle = MathUtils.degreesToRadians * toTarget.angle();
 		body.setTransform(body.getPosition(), desiredAngle);
 	}
@@ -49,7 +50,7 @@ public class Jugador extends Personaje {
 		if (Gdx.input.isKeyPressed(Keys.S)) {
 			movement.y--;
 		}
-		movement.scl(velocidad * delta * 1000000);
+		movement.scl(velocidad * delta);
 		body.setLinearVelocity(movement);
 	}
 	

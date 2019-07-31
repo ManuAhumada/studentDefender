@@ -19,7 +19,7 @@ public class Pistola extends Arma {
 	}
 	
 	public Pistola() {
-		super(250000000, 10, 0, true, 100);
+		super(250000000, 10, 0, false, 100);
 		this.municionTotal = 40;
 		this.tamañoCartucho = 6;
 		this.municionEnArma = 6;

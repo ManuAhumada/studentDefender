@@ -9,10 +9,10 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.studentdefender.armas.Bala;
 import com.studentdefender.personajes.Jugador;
 import com.studentdefender.personajes.Personaje;
 import com.studentdefender.utils.TiledObjectUtil;
@@ -22,25 +22,25 @@ import static com.studentdefender.utils.Constants.PPM;
 public class GameScreen implements Screen {
 	final StudentDefender game;
 	
-	//private final float SCALE = 2.0f; 
+	private final float SCALE = 1f; 
 	
 	private Box2DDebugRenderer b2dr;
 	public static World world;
 
 	//private OrthogonalTiledMapRenderer tmr;
 	private TiledMap map;
-	
+
 	OrthographicCamera camara;
 	
 	Personaje jugador;
 	
-	public static Array<Body> bodysToEliminate = new Array<Body>();
+	public static Array<Bala> activeBullets = new Array<Bala>();
 
 	public GameScreen(final StudentDefender game) {
 		this.game = game;
 
 		camara = new OrthographicCamera();
-		camara.setToOrtho(false, Gdx.graphics.getWidth()/* / SCALE*/, Gdx.graphics.getHeight() /*/ SCALE*/);
+		camara.setToOrtho(false, Gdx.graphics.getWidth() / SCALE, Gdx.graphics.getHeight() / SCALE);
 
 		world = new World(new Vector2(0, 0), false);
 		world.setContactListener(new WorldContactListener());
@@ -50,7 +50,7 @@ public class GameScreen implements Screen {
 		//tmr = new OrthogonalTiledMapRenderer(map);
 		TiledObjectUtil.parseTiledObjectLayer(world, map.getLayers().get("collision-layer").getObjects());
 	
-		jugador = new Jugador(200, 200, 10);
+		jugador = new Jugador(200, 200, 7.5f);
 	}
 
 	public void render(float delta) {
@@ -61,17 +61,19 @@ public class GameScreen implements Screen {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		//tmr.render();
-		b2dr.render(world, camara.combined/*.scl(PPM)*/);
+		b2dr.render(world, camara.combined.cpy().scl(PPM));
 		
 		if(Gdx.input.isKeyJustPressed(Keys.ESCAPE)) Gdx.app.exit();
 	}
 
 	private void update(float delta) {
 		world.step(1/60f, 6, 2);
-		
-		for (Body body : bodysToEliminate) {
-			world.destroyBody(body);
-			bodysToEliminate.removeValue(body, true);
+
+		for (Bala bala : activeBullets) {
+			if (bala.isActiva()) {
+				
+			} else 
+				bala.eliminar();
 		}
 		jugador.actualizar(camara, delta);
 		
@@ -81,37 +83,34 @@ public class GameScreen implements Screen {
 
 	private void cameraUpdate(float delta) {
 		Vector3 position = camara.position;
-		position.x = camara.position.x + (jugador.getPosicion().x - camara.position.x) * .1f; //* PPM;
-		position.y = camara.position.y + (jugador.getPosicion().y - camara.position.y) * .1f; //* PPM;
+		position.x = camara.position.x + (jugador.getPosicion().x * PPM - camara.position.x) * .1f ;
+		position.y = camara.position.y + (jugador.getPosicion().y * PPM - camara.position.y) * .1f ;
 		camara.position.set(position);
 		
 		camara.update();
 	}
 
 	public void resize(int width, int height) {
-		camara.setToOrtho(false, Gdx.graphics.getWidth() /*/ SCALE*/, Gdx.graphics.getHeight() /*/ SCALE*/);
+		camara.setToOrtho(false, Gdx.graphics.getWidth() / SCALE, Gdx.graphics.getHeight() / SCALE);
 		camara.update();
 	}
 
 	public void show() {
-
 	}
 
 	public void hide() {
-
 	}
 
 	public void pause() {
-
 	}
 
 	public void resume() {
-
 	}
 
 	public void dispose() {
 		world.dispose();
 		b2dr.dispose();
+		map.dispose();
 	}
 
 }
