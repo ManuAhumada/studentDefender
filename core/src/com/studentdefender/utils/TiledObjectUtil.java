@@ -25,6 +25,7 @@ public class TiledObjectUtil {
             
             FixtureDef fd = new FixtureDef();
             fd.shape = shape;
+            fd.filter.categoryBits = Constants.BIT_PARED;
             Body body;
             BodyDef bdef = new BodyDef();
             bdef.type = BodyDef.BodyType.StaticBody;

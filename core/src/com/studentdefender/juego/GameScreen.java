@@ -13,6 +13,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.studentdefender.armas.Bala;
+import com.studentdefender.personajes.Enemigo;
 import com.studentdefender.personajes.Jugador;
 import com.studentdefender.personajes.Personaje;
 import com.studentdefender.utils.TiledObjectUtil;
@@ -51,6 +52,7 @@ public class GameScreen implements Screen {
 		TiledObjectUtil.parseTiledObjectLayer(world, map.getLayers().get("collision-layer").getObjects());
 	
 		jugador = new Jugador(200, 200, 7.5f);
+		new Enemigo(250, 200, 7.5f);
 	}
 
 	public void render(float delta) {
