@@ -50,6 +50,9 @@ public class Jugador extends Personaje {
 		if (Gdx.input.isKeyPressed(Keys.S)) {
 			movement.y--;
 		}
+		if (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)) {
+			movement.scl(1.5f);
+		}
 		movement.scl(velocidad * delta);
 		body.setLinearVelocity(movement);
 	}

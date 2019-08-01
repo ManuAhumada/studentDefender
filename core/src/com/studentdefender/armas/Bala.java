@@ -10,7 +10,8 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.studentdefender.juego.GameScreen;
-import com.studentdefender.personajes.Personaje;;
+import com.studentdefender.personajes.Personaje;
+import com.studentdefender.utils.Constants;;
 
 public class Bala {
 	private Personaje disparador;
@@ -67,9 +68,8 @@ public class Bala {
 
         FixtureDef fd = new FixtureDef();
         fd.shape = shape;
-//        fd.filter.categoryBits = Constants.BIT_PLAYER;
-//        fd.filter.maskBits = Constants.BIT_WALL | Constants.BIT_SENSOR;
-//        fd.filter.groupIndex = 0;
+        fd.filter.categoryBits = Constants.BIT_BALA;
+        fd.filter.maskBits = ~Constants.BIT_BALA;
         pBody.createFixture(fd).setUserData(this);
         shape.dispose();
         return pBody;	

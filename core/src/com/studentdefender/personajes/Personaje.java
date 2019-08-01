@@ -1,5 +1,7 @@
 package com.studentdefender.personajes;
 
+import static com.studentdefender.utils.Constants.PPM;
+
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -8,7 +10,7 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.studentdefender.armas.Arma;
 import com.studentdefender.juego.GameScreen;
-import static com.studentdefender.utils.Constants.PPM;
+import com.studentdefender.utils.Constants;
 
 public abstract class Personaje {
 	protected int vida;
@@ -42,11 +44,10 @@ public abstract class Personaje {
         shape.setRadius(radius / PPM);
 
         FixtureDef fd = new FixtureDef();
+        fd.filter.categoryBits = Constants.BIT_PERSONAJE;
+        fd.filter.categoryBits = Constants.BIT_BALA | Constants.BIT_PARED | Constants.BIT_PERSONAJE;
         fd.shape = shape;
-        fd.density = 1;
-//        fd.filter.categoryBits = Constants.BIT_PLAYER;
-//        fd.filter.maskBits = Constants.BIT_WALL | Constants.BIT_SENSOR;
-//        fd.filter.groupIndex = 0;
+        fd.density = 300;
         pBody.createFixture(fd).setUserData(this);
         shape.dispose();
         return pBody;
