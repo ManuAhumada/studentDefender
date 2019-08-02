@@ -52,7 +52,7 @@ public abstract class Personaje {
         shape.dispose();
         return pBody;
     }
-
+	
 	protected abstract void rotar(OrthographicCamera camara);
 
 	protected abstract void mover(float delta);
@@ -72,7 +72,7 @@ public abstract class Personaje {
 		vidaActual -= vidaQuitada;
 		if (vidaActual < 0) {
 			vidaActual = 0;
-		}
+		} 
 	}
 
 	public void agregarVida(int vidaAgregada) {

@@ -2,37 +2,47 @@ package com.studentdefender.armas;
 
 import static com.studentdefender.utils.Constants.PPM;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.utils.Pool.Poolable;
 import com.studentdefender.juego.GameScreen;
 import com.studentdefender.personajes.Personaje;
 import com.studentdefender.utils.Constants;;
 
-public class Bala {
+public class Bala implements Poolable{
 	private Personaje disparador;
-	private Body body; 
-	private float radio;
+	private Body body;
 	private int daño;
 	private int velocidad;
-	private Vector2 direccion;
-	private boolean activa;
-
-	public Bala(Vector2 posicion, float angulo, int daño, Personaje atacante) {
-		activa = true;
+	private boolean activo;
+	
+	public Bala() {
+		activo = false;
 		velocidad = 50;
-		radio = 1f / PPM;
+		body = createCircle(1f / PPM);
+	}
+	
+	public void init(Vector2 posicion, float angulo, int daño, Personaje disparador) {
+		activo = true;
+		body.setActive(true);
 		this.daño = daño;
-		direccion = new Vector2(MathUtils.cos(angulo), MathUtils.sin(angulo));
-		posicion.add(new Vector2(MathUtils.cos(angulo), MathUtils.sin(angulo)).scl((radio + atacante.getRadio() + .01f)));
-		body = createCircle(posicion, radio, angulo);
-		GameScreen.activeBullets.add(this);
-		Gdx.app.log("Bala", "Bala creada en la posicion " + getPosicion() + " con un angulo de " + body.getAngle() + 
-				" y una direccion de " + direccion);
+		this.disparador = disparador;
+		body.setTransform(posicion.add(new Vector2(MathUtils.cos(angulo), MathUtils.sin(angulo)).scl((this.getRadio() + disparador.getRadio() + .01f))), angulo);
+		body.setLinearVelocity(new Vector2(MathUtils.cos(angulo), MathUtils.sin(angulo)).scl(velocidad));
+		GameScreen.balasActivas.add(this);
+	}
+	
+	public void reset() {
+		GameScreen.balasActivas.removeValue(this, true);
+		this.daño = 0;
+		this.disparador = null;
+		body.setTransform(0, 0, 0);
+		body.setLinearVelocity(0, 0);
+		body.setActive(false);
 	}
 
 	public void impactar(Object objeto) {
@@ -40,27 +50,20 @@ public class Bala {
 			Personaje enemigo = (Personaje) objeto;
 			enemigo.quitarVida(daño);
 		}
-		activa = false;
-	}
-
-	public void eliminar() {
-		GameScreen.activeBullets.removeValue(this, true);	
-		GameScreen.world.destroyBody(body);
+		activo = false;
 	}
 	
-	private Body createCircle(Vector2 posicion, float radius, float angle) {
+	private Body createCircle(float radius) {
         Body pBody;
         BodyDef def = new BodyDef();
 
         def.type = BodyDef.BodyType.DynamicBody;
 
-        def.position.set(posicion);
         def.fixedRotation = true;
-        def.angle = angle;
         def.bullet = true;
         def.fixedRotation = true;
+        def.active = false;
         
-        def.linearVelocity.set(new Vector2(MathUtils.cos(angle), MathUtils.sin(angle)).scl(velocidad));
         pBody = GameScreen.world.createBody(def);
 
         CircleShape shape = new CircleShape();
@@ -75,11 +78,15 @@ public class Bala {
         return pBody;	
     }
 	
-	public boolean isActiva() {
-		return activa;
+	public boolean isActivo() {
+		return activo;
 	}
 	
-	public Vector2 getPosicion() {
+	private Vector2 getPosicion() {
 		return body.getPosition();
+	}
+	
+	private float getRadio() {
+		return body.getFixtureList().first().getShape().getRadius();
 	}
 }

@@ -10,10 +10,10 @@ public abstract class Arma {
 	protected boolean automatica;
 	protected int precio;	
 	
-	public Arma(long cadencia, int daño, long ultimaVezUsada, boolean automatica, int precio) {
+	public Arma(long cadencia, int daño, boolean automatica, int precio) {
 		this.daño = daño;
 		this.cadencia = cadencia;
-		this.ultimaVezUsada = ultimaVezUsada;
+		this.ultimaVezUsada = 0;
 		this.automatica = automatica;
 		this.precio = precio;		
 	}

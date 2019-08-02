@@ -14,7 +14,7 @@ public class Jugador extends Personaje {
 	
 	public Jugador(int x, int y, float radio) {
 		super(x, y, radio, 100, 10, 200);
-		armas[0] = new Pistola();
+		armas[0] = new Pistola(250000000, 10, true, 100, 100, 10, 10);
 		dinero = 0;
 	}
 

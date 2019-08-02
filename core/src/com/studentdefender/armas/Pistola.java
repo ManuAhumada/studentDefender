@@ -3,6 +3,7 @@ package com.studentdefender.armas;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.studentdefender.juego.GameScreen;
 import com.studentdefender.personajes.Personaje;
 
 public class Pistola extends Arma {
@@ -10,16 +11,16 @@ public class Pistola extends Arma {
 	protected int tamañoCartucho;
 	protected int municionEnArma;
 	
-	public Pistola(long cadencia, int daño, long ultimaVezUsada, boolean automatica, int precio, int municionTotal,
+	public Pistola(long cadencia, int daño, boolean automatica, int precio, int municionTotal,
 			int tamañoCartucho, int municionEnArma) {
-		super(cadencia, daño, ultimaVezUsada, automatica, precio);
+		super(cadencia, daño, automatica, precio);
 		this.municionTotal = municionTotal;
 		this.tamañoCartucho = tamañoCartucho;
 		this.municionEnArma = municionEnArma;
 	}
 	
 	public Pistola() {
-		super(250000000, 10, 0, false, 100);
+		super(250000000, 10, false, 100);
 		this.municionTotal = 40;
 		this.tamañoCartucho = 6;
 		this.municionEnArma = 6;
@@ -28,15 +29,15 @@ public class Pistola extends Arma {
 	public void atacar(Vector2 posicion, float angulo, Personaje atacante) {
 		if ((TimeUtils.nanoTime() - ultimaVezUsada > cadencia)) {
 			if (this.municionEnArma != 0) {
-				Gdx.app.log("Arma", "Bala disparada");
+//				Gdx.app.log("Arma", "Bala disparada");
 				this.municionEnArma--;
-				this.ultimaVezUsada = TimeUtils.nanoTime();		
-				new Bala(posicion, angulo, daño, atacante);
+				this.ultimaVezUsada = TimeUtils.nanoTime();
+				GameScreen.balaPool.obtain().init(posicion, angulo, daño, atacante);
 			} else {
-				Gdx.app.log("Arma", "No tienes balas");
+//				Gdx.app.log("Arma", "No tienes balas");
 			}
 		} else {
-			Gdx.app.log("Arma", "No ha pasado el tiempo suficiente para poder usarla");
+//			Gdx.app.log("Arma", "No ha pasado el tiempo suficiente para poder usarla");
 		}
 		
 	}
