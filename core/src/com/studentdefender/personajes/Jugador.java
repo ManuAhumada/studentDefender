@@ -17,7 +17,7 @@ public class Jugador extends Personaje {
 		armas[0] = new Pistola(250000000, 10, true, 100, 100, 10, 10);
 		dinero = 0;
 	}
-
+	
 	protected void atacar() {
 		if ((armas[armaSeleccionada].isAutomatica() && Gdx.input.isKeyPressed(Keys.E))
 				|| (!armas[armaSeleccionada].isAutomatica() && Gdx.input.isKeyJustPressed(Keys.E))) {
@@ -31,8 +31,8 @@ public class Jugador extends Personaje {
 		camara.unproject(mousePosition3D);
 		Vector2 mousePosition2D =  new Vector2(mousePosition3D.x, mousePosition3D.y);
 		Vector2 toTarget = mousePosition2D.sub(body.getPosition().scl(PPM)).nor();
-		float desiredAngle = MathUtils.degreesToRadians * toTarget.angle();
-		body.setTransform(body.getPosition(), desiredAngle);
+		float angulo = MathUtils.degreesToRadians * toTarget.angle();
+		body.setTransform(body.getPosition(), angulo);
 	}
 
 	protected void mover(float delta) {

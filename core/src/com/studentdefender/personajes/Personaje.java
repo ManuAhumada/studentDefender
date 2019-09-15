@@ -45,13 +45,20 @@ public abstract class Personaje {
 
         FixtureDef fd = new FixtureDef();
         fd.filter.categoryBits = Constants.BIT_PERSONAJE;
-        fd.filter.categoryBits = Constants.BIT_BALA | Constants.BIT_PARED | Constants.BIT_PERSONAJE;
+        fd.filter.maskBits = Constants.BIT_BALA | Constants.BIT_PARED | Constants.BIT_PERSONAJE;
         fd.shape = shape;
         fd.density = 300;
         pBody.createFixture(fd).setUserData(this);
         shape.dispose();
         return pBody;
     }
+	
+	public void actualizar(OrthographicCamera camera, float delta) {
+		rotar(camera);
+		mover(delta);
+		recargar();
+		atacar();
+	}
 	
 	protected abstract void rotar(OrthographicCamera camara);
 
@@ -60,13 +67,6 @@ public abstract class Personaje {
 	protected abstract void atacar();
 
 	protected abstract void recargar();
-
-	public void actualizar(OrthographicCamera camera, float delta) {
-		rotar(camera);
-		mover(delta);
-		recargar();
-		atacar();
-	}
 
 	public void quitarVida(int vidaQuitada) {
 		vidaActual -= vidaQuitada;
@@ -88,5 +88,9 @@ public abstract class Personaje {
 	
 	public float getRadio() {	
 		return body.getFixtureList().first().getShape().getRadius();
+	}
+	
+	public Body getBody() {
+		return body;
 	}
 }

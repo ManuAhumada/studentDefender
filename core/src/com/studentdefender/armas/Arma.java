@@ -4,14 +4,14 @@ import com.badlogic.gdx.math.Vector2;
 import com.studentdefender.personajes.Personaje;
 
 public abstract class Arma {
-	protected int daño;
+	protected int daÃ±o;
 	protected long cadencia;
 	protected long ultimaVezUsada;
 	protected boolean automatica;
 	protected int precio;	
 	
-	public Arma(long cadencia, int daño, boolean automatica, int precio) {
-		this.daño = daño;
+	public Arma(long cadencia, int daÃ±o, boolean automatica, int precio) {
+		this.daÃ±o = daÃ±o;
 		this.cadencia = cadencia;
 		this.ultimaVezUsada = 0;
 		this.automatica = automatica;

@@ -16,7 +16,7 @@ import com.studentdefender.utils.Constants;;
 public class Bala implements Poolable{
 	private Personaje disparador;
 	private Body body;
-	private int daño;
+	private int daÃ±o;
 	private int velocidad;
 	private boolean activo;
 	
@@ -26,10 +26,10 @@ public class Bala implements Poolable{
 		body = createCircle(1f / PPM);
 	}
 	
-	public void init(Vector2 posicion, float angulo, int daño, Personaje disparador) {
+	public void init(Vector2 posicion, float angulo, int daÃ±o, Personaje disparador) {
 		activo = true;
 		body.setActive(true);
-		this.daño = daño;
+		this.daÃ±o = daÃ±o;
 		this.disparador = disparador;
 		body.setTransform(posicion.add(new Vector2(MathUtils.cos(angulo), MathUtils.sin(angulo)).scl((this.getRadio() + disparador.getRadio() + .01f))), angulo);
 		body.setLinearVelocity(new Vector2(MathUtils.cos(angulo), MathUtils.sin(angulo)).scl(velocidad));
@@ -38,7 +38,7 @@ public class Bala implements Poolable{
 	
 	public void reset() {
 		GameScreen.balasActivas.removeValue(this, true);
-		this.daño = 0;
+		this.daÃ±o = 0;
 		this.disparador = null;
 		body.setTransform(0, 0, 0);
 		body.setLinearVelocity(0, 0);
@@ -48,7 +48,7 @@ public class Bala implements Poolable{
 	public void impactar(Object objeto) {
 		if (objeto instanceof Personaje) {
 			Personaje enemigo = (Personaje) objeto;
-			enemigo.quitarVida(daño);
+			enemigo.quitarVida(daÃ±o);
 		}
 		activo = false;
 	}
@@ -88,5 +88,9 @@ public class Bala implements Poolable{
 	
 	private float getRadio() {
 		return body.getFixtureList().first().getShape().getRadius();
+	}
+
+	public Body getBody() {
+		return body;
 	}
 }

@@ -14,7 +14,6 @@ public class MainMenuScreen implements Screen {
 
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-
 	}
 
 	public void render(float delta) {

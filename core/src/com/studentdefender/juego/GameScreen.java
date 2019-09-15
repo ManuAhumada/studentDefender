@@ -37,7 +37,7 @@ public class GameScreen implements Screen {
 
 	OrthographicCamera camara;
 
-	Personaje jugador;
+	public static Personaje jugador;
 
 	public static Array<Bala> balasActivas = new Array<Bala>();
 	public static Array<Enemigo> enemigosActivos = new Array<Enemigo>();
@@ -75,6 +75,13 @@ public class GameScreen implements Screen {
 
 		// tmr.render();
 		b2dr.render(world, camara.combined.cpy().scl(PPM));
+		game.batch.setProjectionMatrix(camara.combined);
+		
+		game.batch.begin();
+		for (Enemigo enemigo : enemigosActivos) {
+			enemigo.dibujar(game.batch, game.font);
+		}
+		game.batch.end();
 
 		if (Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
 			Gdx.app.exit();
@@ -89,17 +96,17 @@ public class GameScreen implements Screen {
 
 		actualizarBalas();
 		spawnearEnemigos();
-		actualizarEnemigos();
+		actualizarEnemigos(delta);
 		jugador.actualizar(camara, delta);
 
 		cameraUpdate(delta);
 		// tmr.setView(camara);
 	}
 
-	private void actualizarEnemigos() {
+	private void actualizarEnemigos(float delta) {
 		for (Enemigo enemigo : enemigosActivos) {
 			if (enemigo.isActivo()) {
-
+				enemigo.actualizar(camara, delta);
 			} else {
 				enemigoPool.free(enemigo);
 			}
@@ -109,7 +116,7 @@ public class GameScreen implements Screen {
 	private void spawnearEnemigos() {
 		if (enemigosActivos.isEmpty()) {
 			for (int i = 0; i < cantEnemigos; i++) {
-				enemigoPool.obtain().init(MathUtils.random(50, 350), MathUtils.random(50, 350), 7.5f);
+				enemigoPool.obtain().init(MathUtils.random(50, 300), MathUtils.random(50, 300), 7.5f);
 			}
 			cantEnemigos++;
 		}

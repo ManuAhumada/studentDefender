@@ -8,21 +8,21 @@ import com.studentdefender.personajes.Personaje;
 
 public class Pistola extends Arma {
 	protected int municionTotal;
-	protected int tamañoCartucho;
+	protected int tamaÃ±oCartucho;
 	protected int municionEnArma;
 	
-	public Pistola(long cadencia, int daño, boolean automatica, int precio, int municionTotal,
-			int tamañoCartucho, int municionEnArma) {
-		super(cadencia, daño, automatica, precio);
+	public Pistola(long cadencia, int daÃ±o, boolean automatica, int precio, int municionTotal,
+			int tamaÃ±oCartucho, int municionEnArma) {
+		super(cadencia, daÃ±o, automatica, precio);
 		this.municionTotal = municionTotal;
-		this.tamañoCartucho = tamañoCartucho;
+		this.tamaÃ±oCartucho = tamaÃ±oCartucho;
 		this.municionEnArma = municionEnArma;
 	}
 	
 	public Pistola() {
 		super(250000000, 10, false, 100);
 		this.municionTotal = 40;
-		this.tamañoCartucho = 6;
+		this.tamaÃ±oCartucho = 6;
 		this.municionEnArma = 6;
 	}
 	
@@ -32,7 +32,7 @@ public class Pistola extends Arma {
 //				Gdx.app.log("Arma", "Bala disparada");
 				this.municionEnArma--;
 				this.ultimaVezUsada = TimeUtils.nanoTime();
-				GameScreen.balaPool.obtain().init(posicion, angulo, daño, atacante);
+				GameScreen.balaPool.obtain().init(posicion, angulo, daÃ±o, atacante);
 			} else {
 //				Gdx.app.log("Arma", "No tienes balas");
 			}
@@ -44,9 +44,9 @@ public class Pistola extends Arma {
 	
 	public void recargar() {
 		if (municionTotal != 0) {
-			if (municionTotal > tamañoCartucho - municionEnArma) {
-				municionTotal -= tamañoCartucho - municionEnArma;
-				municionEnArma = tamañoCartucho;
+			if (municionTotal > tamaÃ±oCartucho - municionEnArma) {
+				municionTotal -= tamaÃ±oCartucho - municionEnArma;
+				municionEnArma = tamaÃ±oCartucho;
 			} else {
 				municionEnArma = municionTotal;
 				municionTotal = 0;
@@ -58,4 +58,7 @@ public class Pistola extends Arma {
 		}
 	}
 	
+	public int getMunicionEnArma() {
+		return municionEnArma;
+	}
 }
