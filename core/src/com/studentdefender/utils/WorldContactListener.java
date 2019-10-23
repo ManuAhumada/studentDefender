@@ -43,14 +43,7 @@ public final class WorldContactListener implements ContactListener {
 
 		if ((a.getUserData() instanceof Bala) || (b.getUserData() instanceof Bala)) {
 			Bala bala = (Bala) ((a.getUserData() instanceof Bala) ? a.getUserData() : b.getUserData());
-			bala.getBody().setLinearVelocity(0, 0);;
-		}
-		
-		if ((a.getUserData() instanceof Personaje) && (b.getUserData() instanceof Personaje)) {
-			Personaje pa = (Personaje) a.getUserData();
-			pa.getBody().setLinearVelocity(0, 0);
-			Personaje pb = (Personaje) a.getUserData();
-			pb.getBody().setLinearVelocity(0, 0);
+			bala.getBody().setLinearVelocity(0, 0);
 		}
 	}
 

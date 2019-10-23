@@ -1,35 +1,36 @@
 package com.studentdefender.personajes;
 
+import static com.studentdefender.utils.Constants.PPM;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.studentdefender.armas.Pistola;
-import static com.studentdefender.utils.Constants.PPM;
+import com.studentdefender.juego.GameScreen;
 
 public class Jugador extends Personaje {
 	protected int dinero;
-	
+
 	public Jugador(int x, int y, float radio) {
 		super(x, y, radio, 100, 10, 200);
+		body.getFixtureList().first().setDensity(1);
 		armas[0] = new Pistola(250000000, 10, true, 100, 100, 10, 10);
 		dinero = 0;
 	}
-	
+
 	protected void atacar() {
 		if ((armas[armaSeleccionada].isAutomatica() && Gdx.input.isKeyPressed(Keys.E))
 				|| (!armas[armaSeleccionada].isAutomatica() && Gdx.input.isKeyJustPressed(Keys.E))) {
-			Gdx.app.log("Personaje", "Atacando");
 			armas[armaSeleccionada].atacar(getPosicion(), body.getAngle(), this);
-		}	
+		}
 	}
-	
-	protected void rotar(OrthographicCamera camara) {
+
+	protected void rotar() {
 		Vector3 mousePosition3D = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-		camara.unproject(mousePosition3D);
-		Vector2 mousePosition2D =  new Vector2(mousePosition3D.x, mousePosition3D.y);
+		GameScreen.camara.unproject(mousePosition3D);
+		Vector2 mousePosition2D = new Vector2(mousePosition3D.x, mousePosition3D.y);
 		Vector2 toTarget = mousePosition2D.sub(body.getPosition().scl(PPM)).nor();
 		float angulo = MathUtils.degreesToRadians * toTarget.angle();
 		body.setTransform(body.getPosition(), angulo);
@@ -37,7 +38,7 @@ public class Jugador extends Personaje {
 
 	protected void mover(float delta) {
 		Vector2 movement = new Vector2(0, 0);
-		
+
 		if (Gdx.input.isKeyPressed(Keys.A)) {
 			movement.x--;
 		}
@@ -56,14 +57,13 @@ public class Jugador extends Personaje {
 		movement.scl(velocidad * delta);
 		body.setLinearVelocity(movement);
 	}
-	
+
 	public void agregarDinero(int dinero) {
 		this.dinero += dinero;
 	}
-	
+
 	protected void recargar() {
 		if (Gdx.input.isKeyJustPressed(Keys.R)) {
-			Gdx.app.log("Personaje", "Recargando");
 			armas[armaSeleccionada].recargar();
 		}
 	}

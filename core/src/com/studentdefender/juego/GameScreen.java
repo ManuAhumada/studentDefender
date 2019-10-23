@@ -20,7 +20,6 @@ import com.badlogic.gdx.utils.Pools;
 import com.studentdefender.armas.Bala;
 import com.studentdefender.personajes.Enemigo;
 import com.studentdefender.personajes.Jugador;
-import com.studentdefender.personajes.Personaje;
 import com.studentdefender.utils.TiledObjectUtil;
 import com.studentdefender.utils.WorldContactListener;
 
@@ -35,9 +34,9 @@ public class GameScreen implements Screen {
 	// private OrthogonalTiledMapRenderer tmr;
 	private TiledMap map;
 
-	OrthographicCamera camara;
+	public static OrthographicCamera camara;
 
-	public static Personaje jugador;
+	public static Array<Jugador> jugadores = new Array<Jugador>();
 
 	public static Array<Bala> balasActivas = new Array<Bala>();
 	public static Array<Enemigo> enemigosActivos = new Array<Enemigo>();
@@ -61,7 +60,7 @@ public class GameScreen implements Screen {
 		// tmr = new OrthogonalTiledMapRenderer(map);
 		TiledObjectUtil.parseTiledObjectLayer(world, map.getLayers().get("collision-layer").getObjects());
 
-		jugador = new Jugador(200, 200, 7.5f);
+		jugadores.add(new Jugador(200, 200, 7.5f));
 
 		cantEnemigos = 1;
 	}
@@ -76,7 +75,7 @@ public class GameScreen implements Screen {
 		// tmr.render();
 		b2dr.render(world, camara.combined.cpy().scl(PPM));
 		game.batch.setProjectionMatrix(camara.combined);
-		
+
 		game.batch.begin();
 		for (Enemigo enemigo : enemigosActivos) {
 			enemigo.dibujar(game.batch, game.font);
@@ -97,16 +96,22 @@ public class GameScreen implements Screen {
 		actualizarBalas();
 		spawnearEnemigos();
 		actualizarEnemigos(delta);
-		jugador.actualizar(camara, delta);
+		actualizarJugadores(delta);
 
 		cameraUpdate(delta);
 		// tmr.setView(camara);
 	}
 
+	private void actualizarJugadores(float delta) {
+		for (Jugador jugador : jugadores) {
+			jugador.actualizar(delta);
+		}
+	}
+
 	private void actualizarEnemigos(float delta) {
 		for (Enemigo enemigo : enemigosActivos) {
 			if (enemigo.isActivo()) {
-				enemigo.actualizar(camara, delta);
+				enemigo.actualizar(delta);
 			} else {
 				enemigoPool.free(enemigo);
 			}
@@ -115,6 +120,7 @@ public class GameScreen implements Screen {
 
 	private void spawnearEnemigos() {
 		if (enemigosActivos.isEmpty()) {
+			Gdx.app.log("Sistema", "Round " + cantEnemigos);
 			for (int i = 0; i < cantEnemigos; i++) {
 				enemigoPool.obtain().init(MathUtils.random(50, 300), MathUtils.random(50, 300), 7.5f);
 			}
@@ -134,8 +140,8 @@ public class GameScreen implements Screen {
 
 	private void cameraUpdate(float delta) {
 		Vector3 position = camara.position;
-		position.x = camara.position.x + (((jugador.getPosicion().x * PPM) - camara.position.x) * .05f);
-		position.y = camara.position.y + (((jugador.getPosicion().y * PPM) - camara.position.y) * .05f);
+		position.x = camara.position.x + (((jugadores.first().getPosicion().x * PPM) - camara.position.x) * .05f);
+		position.y = camara.position.y + (((jugadores.first().getPosicion().y * PPM) - camara.position.y) * .05f);
 		camara.position.set(position);
 
 		camara.update();

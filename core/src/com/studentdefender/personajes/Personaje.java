@@ -2,7 +2,6 @@ package com.studentdefender.personajes;
 
 import static com.studentdefender.utils.Constants.PPM;
 
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -29,38 +28,37 @@ public abstract class Personaje {
 		this.velocidad = velocidad;
 		this.armas = new Arma[2];
 	}
-	
+
 	private Body createCircle(float x, float y, float radius) {
-        Body pBody;
-        BodyDef def = new BodyDef();
+		Body pBody;
+		BodyDef def = new BodyDef();
 
-        def.type = BodyDef.BodyType.DynamicBody;
+		def.type = BodyDef.BodyType.DynamicBody;
 
-        def.position.set(x / PPM, y / PPM);
-        def.fixedRotation = true;
-        pBody = GameScreen.world.createBody(def);
+		def.position.set(x / PPM, y / PPM);
+		def.fixedRotation = true;
+		pBody = GameScreen.world.createBody(def);
 
-        CircleShape shape = new CircleShape();
-        shape.setRadius(radius / PPM);
+		CircleShape shape = new CircleShape();
+		shape.setRadius(radius / PPM);
 
-        FixtureDef fd = new FixtureDef();
-        fd.filter.categoryBits = Constants.BIT_PERSONAJE;
-        fd.filter.maskBits = Constants.BIT_BALA | Constants.BIT_PARED | Constants.BIT_PERSONAJE;
-        fd.shape = shape;
-        fd.density = 300;
-        pBody.createFixture(fd).setUserData(this);
-        shape.dispose();
-        return pBody;
-    }
-	
-	public void actualizar(OrthographicCamera camera, float delta) {
-		rotar(camera);
+		FixtureDef fd = new FixtureDef();
+		fd.filter.categoryBits = Constants.BIT_PERSONAJE;
+		fd.filter.maskBits = Constants.BIT_BALA | Constants.BIT_PARED | Constants.BIT_PERSONAJE;
+		fd.shape = shape;
+		pBody.createFixture(fd).setUserData(this);
+		shape.dispose();
+		return pBody;
+	}
+
+	public void actualizar(float delta) {
+		rotar();
 		mover(delta);
 		recargar();
 		atacar();
 	}
-	
-	protected abstract void rotar(OrthographicCamera camara);
+
+	protected abstract void rotar();
 
 	protected abstract void mover(float delta);
 
@@ -72,7 +70,7 @@ public abstract class Personaje {
 		vidaActual -= vidaQuitada;
 		if (vidaActual < 0) {
 			vidaActual = 0;
-		} 
+		}
 	}
 
 	public void agregarVida(int vidaAgregada) {
@@ -85,11 +83,11 @@ public abstract class Personaje {
 	public Vector2 getPosicion() {
 		return body.getPosition();
 	}
-	
-	public float getRadio() {	
+
+	public float getRadio() {
 		return body.getFixtureList().first().getShape().getRadius();
 	}
-	
+
 	public Body getBody() {
 		return body;
 	}
