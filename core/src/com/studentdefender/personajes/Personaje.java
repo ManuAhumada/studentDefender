@@ -2,6 +2,8 @@ package com.studentdefender.personajes;
 
 import static com.studentdefender.utils.Constants.PPM;
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -14,19 +16,16 @@ import com.studentdefender.utils.Constants;
 public abstract class Personaje {
 	protected int vida;
 	protected int vidaActual;
-	protected int defensa;
 	protected int velocidad;
 	protected Arma armas[];
 	protected int armaSeleccionada;
 	protected Body body;
 
-	public Personaje(int x, int y, float radio, int vida, int defensa, int velocidad) {
+	public Personaje(int x, int y, float radio, int vida, int velocidad) {
 		body = createCircle(x, y, radio);
 		this.vida = vida;
 		vidaActual = vida;
-		this.defensa = defensa;
 		this.velocidad = velocidad;
-		this.armas = new Arma[2];
 	}
 
 	private Body createCircle(float x, float y, float radius) {
@@ -51,20 +50,17 @@ public abstract class Personaje {
 		return pBody;
 	}
 
-	public void actualizar(float delta) {
-		rotar();
-		mover(delta);
-		recargar();
-		atacar();
-	}
+	public abstract void actualizar(float delta);
+
+	protected abstract void cambiarArma();
 
 	protected abstract void rotar();
 
 	protected abstract void mover(float delta);
 
-	protected abstract void atacar();
-
 	protected abstract void recargar();
+
+	public abstract void dibujar(SpriteBatch batch, BitmapFont font);
 
 	public void quitarVida(int vidaQuitada) {
 		vidaActual -= vidaQuitada;

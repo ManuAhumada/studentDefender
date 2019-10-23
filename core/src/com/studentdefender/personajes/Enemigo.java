@@ -7,22 +7,25 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool.Poolable;
-import com.studentdefender.armas.Pistola;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.studentdefender.juego.GameScreen;
 
 public class Enemigo extends Personaje implements Poolable {
 
 	private boolean activo;
+	private int fuerza;
+	private long ultimoAtaque;
 
 	public Enemigo() {
-		super(0, 0, 0, 100, 10, 100);
+		super(0, 0, 0, 100, 100);
+		fuerza = 10;
 		activo = false;
 		body.setActive(false);
-		armas[0] = new Pistola();
 	}
 
 	public void init(int x, int y, float radio) {
 		activo = true;
+		ultimoAtaque = 0;
 		body.setActive(true);
 		body.setTransform(x / PPM, y / PPM, 0);
 		body.getFixtureList().first().getShape().setRadius(radio / PPM);
@@ -35,7 +38,11 @@ public class Enemigo extends Personaje implements Poolable {
 		body.setLinearVelocity(0, 0);
 		vidaActual = vida;
 		body.setActive(false);
-		armas[0] = new Pistola();
+	}
+
+	public void actualizar(float delta) {
+		rotar();
+		mover(delta);
 	}
 
 	protected void rotar() {
@@ -67,14 +74,14 @@ public class Enemigo extends Personaje implements Poolable {
 	}
 
 	protected void recargar() {
-		Pistola pistola = (Pistola) armas[armaSeleccionada];
-		if (pistola.getMunicionEnArma() == 0) {
-			pistola.recargar();
-		}
 	}
 
-	protected void atacar() {
-		// armas[armaSeleccionada].atacar(getPosicion(), body.getAngle(), this);
+	public void atacar(Jugador jugador) {
+		if (TimeUtils.nanoTime() - ultimoAtaque > 1300000000) {
+			ultimoAtaque = TimeUtils.nanoTime();
+			jugador.quitarVida(fuerza);
+		}
+
 	}
 
 	public void quitarVida(int vidaQuitada) {
@@ -91,5 +98,8 @@ public class Enemigo extends Personaje implements Poolable {
 
 	public void dibujar(SpriteBatch batch, BitmapFont font) {
 		font.draw(batch, vidaActual + "/" + vida, (getPosicion().x - getRadio() * 3) * PPM, getPosicion().y * PPM + 30);
+	}
+
+	protected void cambiarArma() {
 	}
 }

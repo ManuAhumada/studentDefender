@@ -4,9 +4,12 @@ import static com.studentdefender.utils.Constants.PPM;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.studentdefender.armas.Arma;
 import com.studentdefender.armas.Pistola;
 import com.studentdefender.juego.GameScreen;
 
@@ -14,10 +17,20 @@ public class Jugador extends Personaje {
 	protected int dinero;
 
 	public Jugador(int x, int y, float radio) {
-		super(x, y, radio, 100, 10, 200);
+		super(x, y, radio, 100, 200);
 		body.getFixtureList().first().setDensity(1);
+		armas = new Arma[2];
 		armas[0] = new Pistola(250000000, 10, true, 100, 100, 10, 10);
+		armas[1] = new Pistola(500000000, 20, true, 100, 100, 10, 10);
 		dinero = 0;
+	}
+
+	public void actualizar(float delta) {
+		rotar();
+		mover(delta);
+		recargar();
+		atacar();
+		cambiarArma();
 	}
 
 	protected void atacar() {
@@ -75,5 +88,17 @@ public class Jugador extends Personaje {
 		} else {
 			return false;
 		}
+	}
+
+	protected void cambiarArma() {
+		if (Gdx.input.isKeyJustPressed(Keys.Q)) {
+			armaSeleccionada++;
+			if (armaSeleccionada == armas.length)
+				armaSeleccionada = 0;
+		}
+	}
+
+	public void dibujar(SpriteBatch batch, BitmapFont font) {
+		font.draw(batch, vidaActual + "/" + vida, (getPosicion().x - getRadio() * 3) * PPM, getPosicion().y * PPM + 30);
 	}
 }

@@ -80,13 +80,13 @@ public class GameScreen implements Screen {
 		for (Enemigo enemigo : enemigosActivos) {
 			enemigo.dibujar(game.batch, game.font);
 		}
+		for (Jugador jugador : jugadores) {
+			jugador.dibujar(game.batch, game.font);
+		}
 		game.batch.end();
 
 		if (Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
 			Gdx.app.exit();
-		}
-		if (Gdx.input.isKeyJustPressed(Keys.Q)) {
-			System.out.println(enemigoPool.getFree());
 		}
 	}
 
