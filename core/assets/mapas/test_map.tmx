@@ -1,16 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="12" height="12" tilewidth="32" tileheight="32" nextobjectid="16">
- <tileset firstgid="1" name="main" tilewidth="32" tileheight="32">
+<map version="1.2" tiledversion="1.2.5" orientation="orthogonal" renderorder="right-down" width="24" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="9" nextobjectid="29">
+ <tileset firstgid="1" name="main" tilewidth="32" tileheight="32" tilecount="24" columns="6">
   <image source="../tileSets/tileset.png" width="192" height="128"/>
  </tileset>
- <layer name="Tile Layer 1" width="12" height="12">
+ <layer id="5" name="Tile Layer 2" width="24" height="24">
   <data encoding="base64" compression="zlib">
-   eJzjZ2Bg4AViZgKYD4j5oWp5GAgDbqgeTiLUwgDLqHqqqxcGYjYi1LICsQgDJI5BergIYJhaAKsXAbM=
+   eJxjYBicQJQITIr6oW4+OXgkmY8ORpr5uPQSA0aCelqk5VHzqa+HFDyYzKd1+Ax284cqAAC9TBwk
   </data>
  </layer>
- <objectgroup name="collision-layer">
-  <object id="2" x="32" y="320">
-   <polyline points="0,0 0,-256 32,-288 288,-288 320,-256 320,0 288,32 32,32 0,0"/>
+ <layer id="6" name="Tile Layer 1" width="24" height="24">
+  <data encoding="base64" compression="zlib">
+   eJzjZ2Bg4B+EmAeIBfFgbhLUo6vlJ2A2DJOintbmk4NHkvmDPX7Z8KhjxWI+PvW49GBzGzF5bSSoJ1SekBq36GUKLfLKSDKfHDyYzB/s4U9K+UOo7MGmZ6hiAHEKI/I=
+  </data>
+ </layer>
+ <layer id="7" name="Tile Layer 3" width="24" height="24">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFgwmIIWEGJJqW9lETCFDZvIEEw8kvo2AUjIJRMApQAQD4hQCP
+  </data>
+ </layer>
+ <objectgroup id="2" name="collision-layer">
+  <object id="2" x="64" y="294.4">
+   <polyline points="0,-6.4 0,-204.8 25.6,-230.4 230.4,-230.4 256,-204.8 256,-166.4"/>
+  </object>
+  <object id="20" x="64" y="294.4">
+   <polyline points="256,-70.4 256,0 230.4,25.6 193,25.6"/>
+  </object>
+  <object id="16" x="160" y="416">
+   <polyline points="-96,-128 -64,-96 0,-96 0,0 -64,0 -96,32 -96,256 -64,288 128,288 160,256 160,192 256,192 256,256 288,288 544,288 576,256 576,32 544,0 480,0 480,-96 544,-96 576,-128 576,-352 544,-384 320,-384 288,-352 288,-288 160,-288"/>
+  </object>
+  <object id="17" x="256" y="320">
+   <polyline points="0,0 0,96 64,96 64,224 160,224 160,96 288,96 288,0 224,0 192,-32 192,-96 64,-96"/>
+  </object>
+ </objectgroup>
+ <objectgroup id="8" name="nodos" offsetx="16" offsety="16">
+  <object id="21" x="448" y="160">
+   <ellipse/>
+  </object>
+  <object id="22" x="288" y="160">
+   <ellipse/>
+  </object>
+  <object id="23" x="192" y="288">
+   <ellipse/>
+  </object>
+  <object id="24" x="192" y="416">
+   <ellipse/>
+  </object>
+  <object id="25" x="294" y="560">
+   <ellipse/>
+  </object>
+  <object id="26" x="413" y="560">
+   <ellipse/>
+  </object>
+  <object id="27" x="578" y="415">
+   <ellipse/>
+  </object>
+  <object id="28" x="576" y="297">
+   <ellipse/>
   </object>
  </objectgroup>
 </map>

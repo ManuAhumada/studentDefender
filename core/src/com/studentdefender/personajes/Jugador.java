@@ -6,7 +6,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.studentdefender.armas.Arma;
@@ -17,7 +16,7 @@ public class Jugador extends Personaje {
 	protected int dinero;
 
 	public Jugador(int x, int y, float radio) {
-		super(x, y, radio, 100, 200);
+		super(x, y, radio, 100, 100);
 		body.getFixtureList().first().setDensity(1);
 		armas = new Arma[2];
 		armas[0] = new Pistola(250000000, 10, true, 100, 100, 10, 10);
@@ -36,7 +35,7 @@ public class Jugador extends Personaje {
 	protected void atacar() {
 		if ((armas[armaSeleccionada].isAutomatica() && Gdx.input.isKeyPressed(Keys.E))
 				|| (!armas[armaSeleccionada].isAutomatica() && Gdx.input.isKeyJustPressed(Keys.E))) {
-			armas[armaSeleccionada].atacar(getPosicion(), body.getAngle(), this);
+			armas[armaSeleccionada].atacar(getPosition(), body.getAngle(), this);
 		}
 	}
 
@@ -45,8 +44,8 @@ public class Jugador extends Personaje {
 		GameScreen.camara.unproject(mousePosition3D);
 		Vector2 mousePosition2D = new Vector2(mousePosition3D.x, mousePosition3D.y);
 		Vector2 toTarget = mousePosition2D.sub(body.getPosition().scl(PPM)).nor();
-		float angulo = MathUtils.degreesToRadians * toTarget.angle();
-		body.setTransform(body.getPosition(), angulo);
+		float angulo = vectorToAngle(toTarget);
+		body.setTransform(getPosition(), angulo);
 	}
 
 	protected void mover(float delta) {
@@ -99,6 +98,7 @@ public class Jugador extends Personaje {
 	}
 
 	public void dibujar(SpriteBatch batch, BitmapFont font) {
-		font.draw(batch, vidaActual + "/" + vida, (getPosicion().x - getRadio() * 3) * PPM, getPosicion().y * PPM + 30);
+		font.draw(batch, vidaActual + "/" + vida, (getPosition().x - getBoundingRadius() * 3) * PPM,
+				getPosition().y * PPM + 30);
 	}
 }

@@ -2,9 +2,13 @@ package com.studentdefender.personajes;
 
 import static com.studentdefender.utils.Constants.PPM;
 
+import com.badlogic.gdx.ai.steer.SteeringAcceleration;
+import com.badlogic.gdx.ai.steer.behaviors.BlendedSteering;
+import com.badlogic.gdx.ai.steer.behaviors.LookWhereYouAreGoing;
+import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
+import com.badlogic.gdx.ai.steer.behaviors.Seek;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -15,12 +19,23 @@ public class Enemigo extends Personaje implements Poolable {
 	private boolean activo;
 	private int fuerza;
 	private long ultimoAtaque;
+	private Seek<Vector2> seekBehavior;
+	private BlendedSteering<Vector2> steeringBehavior;
+	private SteeringAcceleration<Vector2> steeringOutput;
 
 	public Enemigo() {
 		super(0, 0, 0, 100, 100);
 		fuerza = 10;
 		activo = false;
 		body.setActive(false);
+		steeringOutput = new SteeringAcceleration<Vector2>(new Vector2());
+		PrioritySteering<Vector2> prioritySteering = new PrioritySteering<>(this);
+		seekBehavior = new Seek<Vector2>(this, GameScreen.jugadores.first());
+		prioritySteering.add(seekBehavior);
+
+		steeringBehavior = new BlendedSteering<Vector2>(this);
+		steeringBehavior.add(prioritySteering, 1);
+		steeringBehavior.add(new LookWhereYouAreGoing<>(this), 1);
 	}
 
 	public void init(int x, int y, float radio) {
@@ -41,39 +56,27 @@ public class Enemigo extends Personaje implements Poolable {
 	}
 
 	public void actualizar(float delta) {
-		rotar();
-		mover(delta);
+		encontrarEnemigoMasProximo();
+		steeringBehavior.calculateSteering(steeringOutput);
+		applySteering(steeringOutput, delta);
 	}
 
-	protected void rotar() {
-		Jugador jugadorCercano = encontrarEnemigoCercano();
-		Vector2 posicionEnemigo = jugadorCercano.getPosicion();
-		Vector2 toTarget = posicionEnemigo.sub(body.getPosition()).nor();
-		float angulo = MathUtils.degreesToRadians * toTarget.angle();
-		body.setTransform(body.getPosition(), angulo);
+	private void applySteering(SteeringAcceleration<Vector2> steering, float delta) {
+		body.setLinearVelocity(steering.linear.nor().scl(delta * velocidad));
+		body.setAngularVelocity(steering.angular);
 	}
 
-	private Jugador encontrarEnemigoCercano() {
+	private void encontrarEnemigoMasProximo() {
 		Jugador jugadorCercano = null;
 		float distanciaMinima = 0;
 		for (Jugador jugador : GameScreen.jugadores) {
-			float distancia = this.body.getPosition().dst2(jugador.getPosicion());
+			float distancia = this.body.getPosition().dst2(jugador.getPosition());
 			if (distancia < distanciaMinima || jugadorCercano == null) {
 				jugadorCercano = jugador;
 				distanciaMinima = distancia;
 			}
 		}
-		return jugadorCercano;
-	}
-
-	protected void mover(float delta) {
-		Jugador jugadorCercano = encontrarEnemigoCercano();
-		Vector2 posicionEnemigo = jugadorCercano.getPosicion();
-		Vector2 toTarget = posicionEnemigo.sub(body.getPosition()).nor();
-		body.setLinearVelocity(toTarget.scl(velocidad * delta));
-	}
-
-	protected void recargar() {
+		seekBehavior.setTarget(jugadorCercano);
 	}
 
 	public void atacar(Jugador jugador) {
@@ -81,7 +84,6 @@ public class Enemigo extends Personaje implements Poolable {
 			ultimoAtaque = TimeUtils.nanoTime();
 			jugador.quitarVida(fuerza);
 		}
-
 	}
 
 	public void quitarVida(int vidaQuitada) {
@@ -97,9 +99,7 @@ public class Enemigo extends Personaje implements Poolable {
 	}
 
 	public void dibujar(SpriteBatch batch, BitmapFont font) {
-		font.draw(batch, vidaActual + "/" + vida, (getPosicion().x - getRadio() * 3) * PPM, getPosicion().y * PPM + 30);
-	}
-
-	protected void cambiarArma() {
+		font.draw(batch, vidaActual + "/" + vida, (getPosition().x - getBoundingRadius() * 3) * PPM,
+				getPosition().y * PPM + 30);
 	}
 }

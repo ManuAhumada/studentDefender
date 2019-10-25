@@ -33,7 +33,7 @@ public class Bala implements Poolable {
 		this.daño = daño;
 		this.disparador = disparador;
 		body.setTransform(posicion.add(new Vector2(MathUtils.cos(angulo), MathUtils.sin(angulo))
-				.scl((this.getRadio() + disparador.getRadio() + .01f))), angulo);
+				.scl((this.getRadio() + disparador.getBoundingRadius() + .01f))), angulo);
 		body.setLinearVelocity(new Vector2(MathUtils.cos(angulo), MathUtils.sin(angulo)).scl(velocidad));
 		GameScreen.balasActivas.add(this);
 	}

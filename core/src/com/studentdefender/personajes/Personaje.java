@@ -2,6 +2,8 @@ package com.studentdefender.personajes;
 
 import static com.studentdefender.utils.Constants.PPM;
 
+import com.badlogic.gdx.ai.steer.Steerable;
+import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -13,19 +15,25 @@ import com.studentdefender.armas.Arma;
 import com.studentdefender.juego.GameScreen;
 import com.studentdefender.utils.Constants;
 
-public abstract class Personaje {
+public abstract class Personaje implements Steerable<Vector2> {
 	protected int vida;
 	protected int vidaActual;
-	protected int velocidad;
+	protected float velocidad;
 	protected Arma armas[];
 	protected int armaSeleccionada;
 	protected Body body;
+	protected float maxLinearSpeed, maxLinearAcceleration, maxAngularSpeed, maxAngularAcceleration;
+	protected boolean isTagged;
 
 	public Personaje(int x, int y, float radio, int vida, int velocidad) {
 		body = createCircle(x, y, radio);
 		this.vida = vida;
 		vidaActual = vida;
 		this.velocidad = velocidad;
+		this.maxLinearSpeed = 500;
+		this.maxLinearAcceleration = 5000;
+		this.maxAngularSpeed = 30;
+		this.maxAngularAcceleration = 5;
 	}
 
 	private Body createCircle(float x, float y, float radius) {
@@ -52,14 +60,6 @@ public abstract class Personaje {
 
 	public abstract void actualizar(float delta);
 
-	protected abstract void cambiarArma();
-
-	protected abstract void rotar();
-
-	protected abstract void mover(float delta);
-
-	protected abstract void recargar();
-
 	public abstract void dibujar(SpriteBatch batch, BitmapFont font);
 
 	public void quitarVida(int vidaQuitada) {
@@ -76,15 +76,113 @@ public abstract class Personaje {
 		}
 	}
 
-	public Vector2 getPosicion() {
+	public Body getBody() {
+		return body;
+	}
+
+	@Override
+	public Vector2 getPosition() {
 		return body.getPosition();
 	}
 
-	public float getRadio() {
+	@Override
+	public float getOrientation() {
+		return body.getAngle();
+	}
+
+	@Override
+	public void setOrientation(float orientation) {
+		body.setTransform(getPosition(), orientation);
+	}
+
+	@Override
+	public float vectorToAngle(Vector2 vector) {
+		return vector.angleRad();
+	}
+
+	@Override
+	public Vector2 angleToVector(Vector2 outVector, float angle) {
+		outVector.x = (float) -Math.sin(angle);
+		outVector.y = (float) Math.cos(angle);
+		return outVector;
+	}
+
+	@Override
+	public Location<Vector2> newLocation() {
+		return this;
+	}
+
+	@Override
+	public float getZeroLinearSpeedThreshold() {
+		return 0;
+	}
+
+	@Override
+	public void setZeroLinearSpeedThreshold(float value) {
+	}
+
+	@Override
+	public float getMaxLinearSpeed() {
+		return maxLinearSpeed;
+	}
+
+	@Override
+	public void setMaxLinearSpeed(float maxLinearSpeed) {
+		this.maxLinearSpeed = maxLinearSpeed;
+	}
+
+	@Override
+	public float getMaxLinearAcceleration() {
+		return maxLinearAcceleration;
+	}
+
+	@Override
+	public void setMaxLinearAcceleration(float maxLinearAcceleration) {
+		this.maxLinearAcceleration = maxLinearAcceleration;
+	}
+
+	@Override
+	public float getMaxAngularSpeed() {
+		return maxAngularSpeed;
+	}
+
+	@Override
+	public void setMaxAngularSpeed(float maxAngularSpeed) {
+		this.maxAngularSpeed = maxAngularSpeed;
+	}
+
+	@Override
+	public float getMaxAngularAcceleration() {
+		return maxAngularAcceleration;
+	}
+
+	@Override
+	public void setMaxAngularAcceleration(float maxAngularAcceleration) {
+		this.maxAngularAcceleration = maxAngularAcceleration;
+	}
+
+	@Override
+	public Vector2 getLinearVelocity() {
+		return body.getLinearVelocity();
+	}
+
+	@Override
+	public float getAngularVelocity() {
+		return body.getAngularVelocity();
+	}
+
+	@Override
+	public float getBoundingRadius() {
 		return body.getFixtureList().first().getShape().getRadius();
 	}
 
-	public Body getBody() {
-		return body;
+	@Override
+	public boolean isTagged() {
+		return isTagged;
+	}
+
+	@Override
+	public void setTagged(boolean tagged) {
+		isTagged = tagged;
 	}
 }

@@ -9,7 +9,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -20,6 +21,7 @@ import com.badlogic.gdx.utils.Pools;
 import com.studentdefender.armas.Bala;
 import com.studentdefender.personajes.Enemigo;
 import com.studentdefender.personajes.Jugador;
+import com.studentdefender.personajes.JugadorTest;
 import com.studentdefender.utils.TiledObjectUtil;
 import com.studentdefender.utils.WorldContactListener;
 
@@ -31,8 +33,9 @@ public class GameScreen implements Screen {
 	private Box2DDebugRenderer b2dr;
 	public static World world;
 
-	// private OrthogonalTiledMapRenderer tmr;
+	private OrthogonalTiledMapRenderer tmr;
 	private TiledMap map;
+	private Array<GridPoint2> nodos;
 
 	public static OrthographicCamera camara;
 
@@ -57,10 +60,12 @@ public class GameScreen implements Screen {
 		b2dr = new Box2DDebugRenderer();
 
 		map = new TmxMapLoader().load("mapas\\test_map.tmx");
-		// tmr = new OrthogonalTiledMapRenderer(map);
+		tmr = new OrthogonalTiledMapRenderer(map);
 		TiledObjectUtil.parseTiledObjectLayer(world, map.getLayers().get("collision-layer").getObjects());
+		nodos = TiledObjectUtil.crearNodos(world, map.getLayers().get("nodos").getObjects());
 
 		jugadores.add(new Jugador(200, 200, 7.5f));
+		jugadores.add(new JugadorTest(200, 200, 7.5f));
 
 		cantEnemigos = 1;
 	}
@@ -122,7 +127,8 @@ public class GameScreen implements Screen {
 		if (enemigosActivos.isEmpty()) {
 			Gdx.app.log("Sistema", "Round " + cantEnemigos);
 			for (int i = 0; i < cantEnemigos; i++) {
-				enemigoPool.obtain().init(MathUtils.random(50, 300), MathUtils.random(50, 300), 7.5f);
+				GridPoint2 posicion = nodos.random();
+				enemigoPool.obtain().init(posicion.x, posicion.y, 7.5f);
 			}
 			cantEnemigos++;
 		}
@@ -140,8 +146,8 @@ public class GameScreen implements Screen {
 
 	private void cameraUpdate(float delta) {
 		Vector3 position = camara.position;
-		position.x = camara.position.x + (((jugadores.first().getPosicion().x * PPM) - camara.position.x) * .05f);
-		position.y = camara.position.y + (((jugadores.first().getPosicion().y * PPM) - camara.position.y) * .05f);
+		position.x = camara.position.x + (((jugadores.first().getPosition().x * PPM) - camara.position.x) * .05f);
+		position.y = camara.position.y + (((jugadores.first().getPosition().y * PPM) - camara.position.y) * .05f);
 		camara.position.set(position);
 
 		camara.update();
