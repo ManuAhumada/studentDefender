@@ -70,17 +70,19 @@ public class Enemigo extends Personaje implements Poolable {
 		Jugador jugadorCercano = null;
 		float distanciaMinima = 0;
 		for (Jugador jugador : GameScreen.jugadores) {
-			float distancia = this.body.getPosition().dst2(jugador.getPosition());
-			if (distancia < distanciaMinima || jugadorCercano == null) {
-				jugadorCercano = jugador;
-				distanciaMinima = distancia;
+			if (!jugador.isAbatido()) {
+				float distancia = this.body.getPosition().dst2(jugador.getPosition());
+				if (distancia < distanciaMinima || jugadorCercano == null) {
+					jugadorCercano = jugador;
+					distanciaMinima = distancia;
+				}
 			}
 		}
-		seekBehavior.setTarget(jugadorCercano);
+		seekBehavior.setTarget(jugadorCercano != null ? jugadorCercano : this);
 	}
 
 	public void atacar(Jugador jugador) {
-		if (TimeUtils.nanoTime() - ultimoAtaque > 1300000000) {
+		if (TimeUtils.timeSinceNanos(ultimoAtaque) > 1300000000) {
 			ultimoAtaque = TimeUtils.nanoTime();
 			jugador.quitarVida(fuerza);
 		}
@@ -99,7 +101,9 @@ public class Enemigo extends Personaje implements Poolable {
 	}
 
 	public void dibujar(SpriteBatch batch, BitmapFont font) {
+		batch.begin();
 		font.draw(batch, vidaActual + "/" + vida, (getPosition().x - getBoundingRadius() * 3) * PPM,
 				getPosition().y * PPM + 30);
+		batch.end();
 	}
 }

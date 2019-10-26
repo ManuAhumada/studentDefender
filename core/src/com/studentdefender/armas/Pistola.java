@@ -26,7 +26,7 @@ public class Pistola extends Arma {
 	}
 
 	public void atacar(Vector2 posicion, float angulo, Personaje atacante) {
-		if ((TimeUtils.nanoTime() - ultimaVezUsada > cadencia)) {
+		if ((TimeUtils.timeSinceNanos(ultimaVezUsada) > cadencia)) {
 			if (this.municionEnArma != 0) {
 				this.municionEnArma--;
 				this.ultimaVezUsada = TimeUtils.nanoTime();

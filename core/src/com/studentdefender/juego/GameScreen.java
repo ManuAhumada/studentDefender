@@ -7,6 +7,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -29,6 +30,8 @@ public class GameScreen implements Screen {
 	final StudentDefender game;
 
 	private final float SCALE = 1f;
+
+	public static ShapeRenderer shapeRenderer;
 
 	private Box2DDebugRenderer b2dr;
 	public static World world;
@@ -59,13 +62,15 @@ public class GameScreen implements Screen {
 		world.setContactListener(new WorldContactListener());
 		b2dr = new Box2DDebugRenderer();
 
+		shapeRenderer = new ShapeRenderer();
+
 		map = new TmxMapLoader().load("mapas\\test_map.tmx");
 		tmr = new OrthogonalTiledMapRenderer(map);
 		TiledObjectUtil.parseTiledObjectLayer(world, map.getLayers().get("collision-layer").getObjects());
 		nodos = TiledObjectUtil.crearNodos(world, map.getLayers().get("nodos").getObjects());
 
-		jugadores.add(new Jugador(200, 200, 7.5f));
-		jugadores.add(new JugadorTest(200, 200, 7.5f));
+		jugadores.add(new Jugador(nodos.get(0).x, nodos.get(0).y, 7.5f));
+		jugadores.add(new JugadorTest(nodos.get(1).x, nodos.get(1).y, 7.5f));
 
 		cantEnemigos = 1;
 	}
@@ -80,15 +85,16 @@ public class GameScreen implements Screen {
 		// tmr.render();
 		b2dr.render(world, camara.combined.cpy().scl(PPM));
 		game.batch.setProjectionMatrix(camara.combined);
+		shapeRenderer.setProjectionMatrix(camara.combined);
 
-		game.batch.begin();
 		for (Enemigo enemigo : enemigosActivos) {
 			enemigo.dibujar(game.batch, game.font);
 		}
 		for (Jugador jugador : jugadores) {
-			jugador.dibujar(game.batch, game.font);
+			if (!jugador.isMuerto()) {
+				jugador.dibujar(game.batch, game.font);
+			}
 		}
-		game.batch.end();
 
 		if (Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
 			Gdx.app.exit();
@@ -109,7 +115,11 @@ public class GameScreen implements Screen {
 
 	private void actualizarJugadores(float delta) {
 		for (Jugador jugador : jugadores) {
-			jugador.actualizar(delta);
+			if (!jugador.isMuerto()) {
+				jugador.actualizar(delta);
+			} else {
+				jugador.getBody().setActive(false);
+			}
 		}
 	}
 
@@ -125,12 +135,21 @@ public class GameScreen implements Screen {
 
 	private void spawnearEnemigos() {
 		if (enemigosActivos.isEmpty()) {
+			spawnearJugadores();
 			Gdx.app.log("Sistema", "Round " + cantEnemigos);
 			for (int i = 0; i < cantEnemigos; i++) {
 				GridPoint2 posicion = nodos.random();
 				enemigoPool.obtain().init(posicion.x, posicion.y, 7.5f);
 			}
 			cantEnemigos++;
+		}
+	}
+
+	private void spawnearJugadores() {
+		for (Jugador jugador : jugadores) {
+			if (jugador.isMuerto()) {
+				jugador.reiniciar();
+			}
 		}
 	}
 
@@ -174,6 +193,7 @@ public class GameScreen implements Screen {
 		world.dispose();
 		b2dr.dispose();
 		map.dispose();
+		tmr.dispose();
 	}
 
 }
