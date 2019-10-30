@@ -8,17 +8,17 @@
    eJxjYBicQJQITIr6oW4+OXgkmY8ORpr5uPQSA0aCelqk5VHzqa+HFDyYzKd1+Ax284cqAAC9TBwk
   </data>
  </layer>
- <layer id="6" name="Tile Layer 1" width="24" height="24" visible="0">
+ <layer id="6" name="Tile Layer 1" width="24" height="24">
   <data encoding="base64" compression="zlib">
    eJzjZ2Bg4B+EmAeIBfFgbhLUo6vlJ2A2DJOintbmk4NHkvmDPX7Z8KhjxWI+PvW49GBzGzF5bSSoJ1SekBq36GUKLfLKSDKfHDyYzB/s4U9K+UOo7MGmZ6hiAHEKI/I=
   </data>
  </layer>
- <layer id="7" name="Tile Layer 3" width="24" height="24" visible="0">
+ <layer id="7" name="Tile Layer 3" width="24" height="24">
   <data encoding="base64" compression="zlib">
    eJxjYBgFgwmIIWEGJJqW9lETCFDZvIEEw8kvo2AUjIJRMApQAQD4hQCP
   </data>
  </layer>
- <objectgroup id="2" name="collision-layer" visible="0">
+ <objectgroup id="2" name="collision-layer">
   <object id="2" x="64" y="294.4">
    <polyline points="0,-6.4 0,-204.8 25.6,-230.4 230.4,-230.4 256,-204.8 256,-166.4"/>
   </object>
@@ -46,10 +46,10 @@
    <polyline points="0,0 0,160"/>
   </object>
   <object id="99" x="592" y="448">
-   <polyline points="0,0 -32,88"/>
+   <polyline points="0,0 -32,112"/>
   </object>
-  <object id="100" x="560" y="536">
-   <polyline points="0,0 -112,40"/>
+  <object id="100" x="560" y="560">
+   <polyline points="0,0 -112,16"/>
   </object>
   <object id="101" x="448" y="576">
    <polyline points="0,0 -160,0"/>
@@ -98,7 +98,7 @@
   <object id="61" x="216" y="528">
    <point/>
   </object>
-  <object id="62" x="560" y="536">
+  <object id="62" x="560" y="560">
    <point/>
   </object>
   <object id="63" x="560" y="208">

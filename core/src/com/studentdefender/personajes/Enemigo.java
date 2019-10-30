@@ -8,8 +8,10 @@ import com.badlogic.gdx.ai.steer.behaviors.LookWhereYouAreGoing;
 import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
 import com.badlogic.gdx.ai.steer.behaviors.Seek;
 import com.badlogic.gdx.ai.utils.Location;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -69,21 +71,22 @@ public class Enemigo extends Personaje implements Poolable {
 	}
 
 	private void definirObjetivo() {
-		Location<Vector2> objetivo;
+		Location<Vector2> objetivo = this; // Si no encuentra nada que se quede en el lugar
 		Jugador jugadorCercano = encontrarJugadorMasCercano();
-		Node nodoCercano = GameScreen.indexedGraphImp.getCloserNode(getPosition());
-		if (getPosition().dst(nodoCercano.getPosition()) < getPosition().dst(jugadorCercano.getPosition())) {
-			Node nodoCercanoEnemigo = GameScreen.indexedGraphImp.getCloserNode(jugadorCercano.getPosition());
+		GameScreen.world.rayCast(GameScreen.rayCastCallback, getPosition(), jugadorCercano.getPosition());
+		if (GameScreen.rayCastCallback.isHit()) {
+			objetivo = jugadorCercano;
 			graphPath.clear();
+		} else {
+			Node nodoCercano = GameScreen.indexedGraphImp.getCloserNode(getPosition());
+			Node nodoCercanoEnemigo = GameScreen.indexedGraphImp.getCloserNode(jugadorCercano.getPosition());
 			GameScreen.indexedAStarPathFinder.searchNodePath(nodoCercano, nodoCercanoEnemigo, new HeuristicImp(),
 					graphPath);
-			if (graphPath.getCount() > 1)
+			if (graphPath.getCount() == 1) {
+				objetivo = graphPath.get(0);
+			} else {
 				objetivo = graphPath.get(1);
-			else {
-				objetivo = jugadorCercano;
 			}
-		} else {
-			objetivo = jugadorCercano;
 		}
 		seekBehavior.setTarget(objetivo);
 	}
@@ -128,14 +131,26 @@ public class Enemigo extends Personaje implements Poolable {
 	}
 
 	public void dibujar(SpriteBatch batch, BitmapFont font) {
+		super.dibujar(batch, font);
 		batch.begin();
 		font.draw(batch, vidaActual + "/" + vida, (getPosition().x - getBoundingRadius() * 3) * PPM,
 				getPosition().y * PPM + 30);
-		if (Constants.DEBUG) {
-			font.draw(batch, "x: " + getPosition().x + ", y: " + getPosition().y, getPosition().x * PPM - 80,
-					getPosition().y * PPM - 10);
-		}
-
 		batch.end();
+		if (Constants.DEBUG) {
+			GameScreen.shapeRenderer.begin(ShapeType.Line);
+			GameScreen.shapeRenderer.setColor(Color.RED);
+			GameScreen.shapeRenderer.line(getPosition().cpy().scl(PPM),
+					encontrarJugadorMasCercano().getPosition().cpy().scl(PPM));
+			if (graphPath.getCount() > 1) {
+				GameScreen.shapeRenderer.line(getPosition().cpy().scl(PPM),
+						graphPath.get(1).getPosition().cpy().scl(PPM));
+			}
+			GameScreen.shapeRenderer.setColor(Color.WHITE);
+			GameScreen.shapeRenderer.end();
+			GameScreen.shapeRenderer.begin(ShapeType.Filled);
+			GameScreen.shapeRenderer.circle(GameScreen.rayCastCallback.getImpactPoint().cpy().scl(PPM).x,
+					GameScreen.rayCastCallback.getImpactPoint().cpy().scl(PPM).y, 2);
+			GameScreen.shapeRenderer.end();
+		}
 	}
 }

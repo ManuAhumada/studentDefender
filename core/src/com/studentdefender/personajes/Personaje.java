@@ -2,6 +2,8 @@ package com.studentdefender.personajes;
 
 import static com.studentdefender.utils.Constants.PPM;
 
+import java.text.DecimalFormat;
+
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -60,7 +62,15 @@ public abstract class Personaje implements Steerable<Vector2> {
 
 	public abstract void actualizar(float delta);
 
-	public abstract void dibujar(SpriteBatch batch, BitmapFont font);
+	public void dibujar(SpriteBatch batch, BitmapFont font) {
+		batch.begin();
+		if (Constants.DEBUG) {
+			DecimalFormat f = new DecimalFormat("#.##");
+			font.draw(batch, "x: " + f.format(getPosition().x) + ", y: " + f.format(getPosition().y),
+					getPosition().x * PPM - 55, getPosition().y * PPM - 10);
+		}
+		batch.end();
+	}
 
 	public void quitarVida(int vidaQuitada) {
 		vidaActual -= vidaQuitada;

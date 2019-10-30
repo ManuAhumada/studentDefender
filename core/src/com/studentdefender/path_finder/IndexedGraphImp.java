@@ -7,28 +7,11 @@ import com.badlogic.gdx.utils.Array;
 
 public class IndexedGraphImp implements IndexedGraph<Node> {
 
-    public Array<ConnectionImp> connections;
-    public Array<Node> nodes;
+    private Array<ConnectionImp> connections;
+    private Array<Node> nodes;
 
-    @Override
-    public Array<Connection<Node>> getConnections(Node fromNode) {
-        Array<Connection<Node>> connectionsFromNode = new Array<>();
-        for (Connection<Node> connection : connections) {
-            if (connection.getFromNode().getPosicion().epsilonEquals(fromNode.getPosicion())) {
-                connectionsFromNode.add(connection);
-            }
-        }
-        return connectionsFromNode;
-    }
-
-    @Override
-    public int getIndex(Node node) {
-        return nodes.indexOf(node, true);
-    }
-
-    @Override
-    public int getNodeCount() {
-        return nodes.size;
+    public IndexedGraphImp(Array<Node> nodes) {
+        this.nodes = nodes;
     }
 
     public Node getCloserNode(Vector2 position) {
@@ -42,6 +25,35 @@ public class IndexedGraphImp implements IndexedGraph<Node> {
             }
         }
         return closerNode;
+    }
+
+    @Override
+    public Array<Connection<Node>> getConnections(Node fromNode) {
+        Array<Connection<Node>> connectionsFromNode = new Array<>();
+        for (Connection<Node> connection : connections) {
+            if (connection.getFromNode().getPosicion().epsilonEquals(fromNode.getPosicion())) {
+                connectionsFromNode.add(connection);
+            }
+        }
+        return connectionsFromNode;
+    }
+
+    public Array<Node> getNodes() {
+        return nodes;
+    }
+
+    public void setConnections(Array<ConnectionImp> connections) {
+        this.connections = connections;
+    }
+
+    @Override
+    public int getIndex(Node node) {
+        return nodes.indexOf(node, true);
+    }
+
+    @Override
+    public int getNodeCount() {
+        return nodes.size;
     }
 
     public Node getNodeByPosition(int x, int y) {

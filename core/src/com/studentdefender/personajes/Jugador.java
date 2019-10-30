@@ -144,6 +144,7 @@ public class Jugador extends Personaje {
 	}
 
 	public void dibujar(SpriteBatch batch, BitmapFont font) {
+		super.dibujar(batch, font);
 		batch.begin();
 		if (!isAbatido()) {
 			font.draw(batch, vidaActual + "/" + vida, (getPosition().x - getBoundingRadius() * 3) * PPM,
@@ -155,7 +156,6 @@ public class Jugador extends Personaje {
 		if (jugadorReviviendo != null) {
 			GameScreen.shapeRenderer.setColor(Color.WHITE);
 			GameScreen.shapeRenderer.begin(ShapeType.Filled);
-			System.out.println(getPosition());
 			GameScreen.shapeRenderer.arc(jugadorReviviendo.getPosition().x * PPM,
 					jugadorReviviendo.getPosition().y * PPM + 45, 8, 90,
 					((float) TimeUtils.timeSinceNanos(tiempoReviviendo) / TIEMPO_REVIVIR) * 360);
