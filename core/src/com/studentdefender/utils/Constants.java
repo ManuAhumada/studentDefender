@@ -8,5 +8,6 @@ public final class Constants {
 	public static final short BIT_PERSONAJE = 1;
 	public static final short BIT_BALA = 2;
 	public static final short BIT_PARED = 4;
+	public static final short BIT_LUZ = 8;
 
 }

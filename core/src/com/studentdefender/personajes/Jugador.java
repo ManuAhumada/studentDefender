@@ -15,6 +15,9 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.studentdefender.armas.Arma;
 import com.studentdefender.armas.Pistola;
 import com.studentdefender.juego.GameScreen;
+import com.studentdefender.utils.Constants;
+
+import box2dLight.PointLight;
 
 public class Jugador extends Personaje {
 	protected int dinero;
@@ -23,12 +26,20 @@ public class Jugador extends Personaje {
 	protected long momentoAbatido;
 	protected Jugador jugadorReviviendo;
 	protected long tiempoReviviendo;
+	PointLight pointLight;
 
 	public static final long TIEMPO_REVIVIR = 3000000000L;
 	public static final long MAX_TIEMPO_ABATIDO = 30000000000L;
 
 	public Jugador(int x, int y, float radio) {
 		super(x, y, radio, 100, 100);
+		pointLight = new PointLight(GameScreen.rayHandler, 100, new Color(1f, 1f, 1f, .65f), 10,
+				GameScreen.indexedGraphImp.getNodes().get(0).getPosition().x,
+				GameScreen.indexedGraphImp.getNodes().get(0).getPosition().y);
+		pointLight.setSoft(false);
+		pointLight.attachToBody(body);
+		pointLight.setIgnoreAttachedBody(false);
+		pointLight.setContactFilter(Constants.BIT_LUZ, (short) 0, Constants.BIT_PARED);
 		reiniciar();
 	}
 
@@ -44,6 +55,7 @@ public class Jugador extends Personaje {
 		body.setActive(true);
 		jugadorReviviendo = null;
 		tiempoReviviendo = 0;
+		pointLight.setActive(true);
 	}
 
 	public void actualizar(float delta) {
@@ -202,5 +214,6 @@ public class Jugador extends Personaje {
 
 	private void morir() {
 		muerto = true;
+		pointLight.setActive(false);
 	}
 }

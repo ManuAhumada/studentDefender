@@ -30,6 +30,8 @@ import com.studentdefender.utils.Constants;
 import com.studentdefender.utils.TiledObjectUtil;
 import com.studentdefender.utils.WorldContactListener;
 
+import box2dLight.RayHandler;
+
 public class GameScreen implements Screen {
 	final StudentDefender game;
 
@@ -40,6 +42,7 @@ public class GameScreen implements Screen {
 	private Box2DDebugRenderer b2dr;
 	public static World world;
 	public static RayCastCallbackImp rayCastCallback;
+	public static RayHandler rayHandler;
 
 	private OrthogonalTiledMapRenderer tmr;
 	public static TiledMap map;
@@ -67,6 +70,8 @@ public class GameScreen implements Screen {
 		world = new World(new Vector2(0, 0), false);
 		world.setContactListener(new WorldContactListener());
 		b2dr = new Box2DDebugRenderer();
+		rayHandler = new RayHandler(world);
+		rayHandler.setAmbientLight(0);
 		rayCastCallback = new RayCastCallbackImp();
 
 		shapeRenderer = new ShapeRenderer();
@@ -95,12 +100,14 @@ public class GameScreen implements Screen {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		// tmr.render();
-		b2dr.render(world, camara.combined.cpy().scl(PPM));
 		game.batch.setProjectionMatrix(camara.combined);
 		shapeRenderer.setProjectionMatrix(camara.combined);
+		rayHandler.setCombinedMatrix(camara.combined.cpy().scl(PPM));
 
+		// tmr.render();
+		b2dr.render(world, camara.combined.cpy().scl(PPM));
 		dibujar();
+		rayHandler.render();
 
 		if (Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
 			this.pause();
@@ -125,6 +132,7 @@ public class GameScreen implements Screen {
 
 	private void update(float delta) {
 		world.step(1 / 60f, 6, 2);
+		rayHandler.update();
 
 		actualizarBalas();
 		spawnearEnemigos();
@@ -160,7 +168,7 @@ public class GameScreen implements Screen {
 			spawnearJugadores();
 			Gdx.app.log("Sistema", "Round " + cantEnemigos);
 			for (int i = 0; i < cantEnemigos; i++) {
-				Vector2 posicion = indexedGraphImp.getNodes().random().getPosicion();
+				Vector2 posicion = indexedGraphImp.getNodes().get(5).getPosicion();
 				enemigoPool.obtain().init((int) posicion.x, (int) posicion.y, 7.5f);
 			}
 			cantEnemigos *= 1.5;
@@ -216,6 +224,7 @@ public class GameScreen implements Screen {
 		b2dr.dispose();
 		map.dispose();
 		tmr.dispose();
+		rayHandler.dispose();
 	}
 
 }
