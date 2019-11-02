@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -35,7 +36,7 @@ import box2dLight.RayHandler;
 public class GameScreen implements Screen {
 	final StudentDefender game;
 
-	private final float SCALE = 1f;
+	private final float SCALE = 2f;
 
 	public static ShapeRenderer shapeRenderer;
 
@@ -52,6 +53,8 @@ public class GameScreen implements Screen {
 	public static OrthographicCamera camara;
 
 	public static Array<Jugador> jugadores = new Array<Jugador>();
+	private static Array<Node> spawnsJugadores;
+	private static Array<Node> spawnsEnemigos;
 
 	public static Array<Bala> balasActivas = new Array<Bala>();
 	public static Array<Enemigo> enemigosActivos = new Array<Enemigo>();
@@ -71,26 +74,33 @@ public class GameScreen implements Screen {
 		world.setContactListener(new WorldContactListener());
 		b2dr = new Box2DDebugRenderer();
 		rayHandler = new RayHandler(world);
-		rayHandler.setAmbientLight(0);
+		rayHandler.setAmbientLight(Constants.DEBUG ? 1 : 0);
 		rayCastCallback = new RayCastCallbackImp();
 
 		shapeRenderer = new ShapeRenderer();
 
-		map = new TmxMapLoader().load("mapas\\test_map.tmx");
+		crearMapa();
+
+		jugadores.add(new Jugador((int) (spawnsJugadores.get(0).getPosition().x * PPM),
+				(int) (spawnsJugadores.get(0).getPosition().y * PPM), 7.5f));
+		jugadores.add(new JugadorTest((int) (spawnsJugadores.get(1).getPosition().x * PPM),
+				(int) (spawnsJugadores.get(1).getPosition().y * PPM), 7.5f));
+
+		cantEnemigos = 3;
+	}
+
+	private void crearMapa() {
+		map = new TmxMapLoader().load("mapas\\big_map.tmx");
 		tmr = new OrthogonalTiledMapRenderer(map, game.batch);
-		TiledObjectUtil.parseTiledObjectLayer(world, map.getLayers().get("collision-layer").getObjects());
+		TiledObjectUtil.parseTiledObjectLayer(world, map.getLayers().get("collision-layer").getObjects(), false);
+		TiledObjectUtil.parseTiledObjectLayer(world, map.getLayers().get("spawns-puertas").getObjects(), true);
 		indexedGraphImp = new IndexedGraphImp(
 				TiledObjectUtil.crearNodos(world, map.getLayers().get("nodos").getObjects()));
 		indexedGraphImp.setConnections(
 				TiledObjectUtil.crearConexiones(world, map.getLayers().get("connections").getObjects()));
 		indexedAStarPathFinder = new IndexedAStarPathFinder<>(indexedGraphImp);
-
-		jugadores.add(new Jugador((int) indexedGraphImp.getNodes().get(0).getPosicion().x,
-				(int) indexedGraphImp.getNodes().get(0).getPosicion().y, 7.5f));
-		jugadores.add(new JugadorTest((int) indexedGraphImp.getNodes().get(1).getPosicion().x,
-				(int) indexedGraphImp.getNodes().get(1).getPosicion().y, 7.5f));
-
-		cantEnemigos = 3;
+		spawnsJugadores = TiledObjectUtil.crearNodos(world, map.getLayers().get("spawns-jugadores").getObjects());
+		spawnsEnemigos = TiledObjectUtil.crearNodos(world, map.getLayers().get("spawns-enemigos").getObjects());
 	}
 
 	public void render(float delta) {
@@ -168,8 +178,8 @@ public class GameScreen implements Screen {
 			spawnearJugadores();
 			Gdx.app.log("Sistema", "Round " + cantEnemigos);
 			for (int i = 0; i < cantEnemigos; i++) {
-				Vector2 posicion = indexedGraphImp.getNodes().get(5).getPosicion();
-				enemigoPool.obtain().init((int) posicion.x, (int) posicion.y, 7.5f);
+				Vector2 posicion = spawnsEnemigos.get(MathUtils.random(spawnsEnemigos.size - 1)).getPosition();
+				enemigoPool.obtain().init((int) (posicion.x * PPM), (int) (posicion.y * PPM), 7.5f);
 			}
 			cantEnemigos *= 1.5;
 		}

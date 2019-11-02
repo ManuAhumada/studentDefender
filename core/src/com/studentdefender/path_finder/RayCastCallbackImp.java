@@ -6,8 +6,8 @@ import com.badlogic.gdx.physics.box2d.RayCastCallback;
 
 public class RayCastCallbackImp implements RayCastCallback {
 
-    boolean hit;
-    Vector2 impactPoint;
+    private boolean hit;
+    private Vector2 impactPoint;
 
     public RayCastCallbackImp() {
         hit = false;

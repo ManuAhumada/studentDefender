@@ -27,8 +27,8 @@ public abstract class Personaje implements Steerable<Vector2> {
 	protected float maxLinearSpeed, maxLinearAcceleration, maxAngularSpeed, maxAngularAcceleration;
 	protected boolean isTagged;
 
-	public Personaje(int x, int y, float radio, int vida, int velocidad) {
-		body = createCircle(x, y, radio);
+	public Personaje(int x, int y, float radio, int vida, int velocidad, boolean isEnemy) {
+		body = createCircle(x, y, radio, isEnemy);
 		this.vida = vida;
 		vidaActual = vida;
 		this.velocidad = velocidad;
@@ -38,7 +38,7 @@ public abstract class Personaje implements Steerable<Vector2> {
 		this.maxAngularAcceleration = 5;
 	}
 
-	private Body createCircle(float x, float y, float radius) {
+	private Body createCircle(float x, float y, float radius, boolean isEnemy) {
 		Body pBody;
 		BodyDef def = new BodyDef();
 
@@ -52,8 +52,13 @@ public abstract class Personaje implements Steerable<Vector2> {
 		shape.setRadius(radius / PPM);
 
 		FixtureDef fd = new FixtureDef();
-		fd.filter.categoryBits = Constants.BIT_PERSONAJE;
-		fd.filter.maskBits = Constants.BIT_BALA | Constants.BIT_PARED | Constants.BIT_PERSONAJE;
+		fd.filter.categoryBits = isEnemy ? Constants.BIT_ENEMIGO : Constants.BIT_JUGADOR;
+		if (isEnemy) {
+			fd.filter.maskBits = Constants.BIT_BALA | Constants.BIT_PARED | Constants.BIT_JUGADOR;
+		} else {
+			fd.filter.maskBits = Constants.BIT_BALA | Constants.BIT_PARED | Constants.BIT_JUGADOR | Constants.BIT_PUERTA_ENEMIGO;
+		}
+		
 		fd.shape = shape;
 		pBody.createFixture(fd).setUserData(this);
 		shape.dispose();

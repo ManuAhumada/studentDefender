@@ -33,7 +33,7 @@ public class Enemigo extends Personaje implements Poolable {
 	private GraphPathImp graphPath;
 
 	public Enemigo() {
-		super(0, 0, 0, 100, 100);
+		super(0, 0, 0, 100, 100, true);
 		fuerza = 10;
 		activo = false;
 		body.setActive(false);
@@ -85,7 +85,12 @@ public class Enemigo extends Personaje implements Poolable {
 			if (graphPath.getCount() == 1) {
 				objetivo = graphPath.get(0);
 			} else {
-				objetivo = graphPath.get(1);
+				GameScreen.world.rayCast(GameScreen.rayCastCallback, getPosition(), graphPath.get(1).getPosition());
+				if (GameScreen.rayCastCallback.isHit()) {
+					objetivo = graphPath.get(1);
+				} else {
+					objetivo = graphPath.get(0);
+				}
 			}
 		}
 		seekBehavior.setTarget(objetivo);

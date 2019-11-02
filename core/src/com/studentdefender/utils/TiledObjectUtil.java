@@ -19,7 +19,7 @@ import com.studentdefender.path_finder.ConnectionImp;
 import com.studentdefender.path_finder.Node;
 
 public class TiledObjectUtil {
-    public static void parseTiledObjectLayer(World world, MapObjects objects) {
+    public static void parseTiledObjectLayer(World world, MapObjects objects, boolean enemyCanPass) {
         for (MapObject object : objects) {
             Shape shape;
 
@@ -33,12 +33,22 @@ public class TiledObjectUtil {
 
             FixtureDef fd = new FixtureDef();
             fd.shape = shape;
-            fd.filter.categoryBits = Constants.BIT_PARED;
+            fd.filter.categoryBits = enemyCanPass ? Constants.BIT_PUERTA_ENEMIGO : Constants.BIT_PARED;
+            if (enemyCanPass) {
+                fd.filter.maskBits = Constants.BIT_BALA | Constants.BIT_JUGADOR | Constants.BIT_LUZ;
+            } else {
+                fd.filter.maskBits = Constants.BIT_BALA | Constants.BIT_JUGADOR | Constants.BIT_ENEMIGO | Constants.BIT_LUZ;
+            }
             Body body;
             BodyDef bdef = new BodyDef();
             bdef.type = BodyDef.BodyType.StaticBody;
             body = world.createBody(bdef);
-            body.createFixture(fd).setUserData("Wall");
+            
+            if (!enemyCanPass)
+                body.createFixture(fd).setUserData("Wall");
+            else 
+                body.createFixture(fd);
+
             shape.dispose();
         }
     }
@@ -82,8 +92,8 @@ public class TiledObjectUtil {
         for (MapObject object : objects) {
             if (object instanceof PolylineMapObject) {
                 float[] vertices = ((PolylineMapObject) object).getPolyline().getTransformedVertices();
-                Node firstNode = GameScreen.indexedGraphImp.getNodeByPosition((int) vertices[0], (int) vertices[1]);
-                Node secondNode = GameScreen.indexedGraphImp.getNodeByPosition((int) vertices[2], (int) vertices[3]);
+                Node firstNode = GameScreen.indexedGraphImp.getNodeByPosition(vertices[0] / PPM, vertices[1] / PPM);
+                Node secondNode = GameScreen.indexedGraphImp.getNodeByPosition(vertices[2] / PPM, vertices[3] / PPM);
                 connections.add(new ConnectionImp(firstNode, secondNode));
                 connections.add(new ConnectionImp(secondNode, firstNode));
             }

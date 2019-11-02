@@ -32,14 +32,14 @@ public class Jugador extends Personaje {
 	public static final long MAX_TIEMPO_ABATIDO = 30000000000L;
 
 	public Jugador(int x, int y, float radio) {
-		super(x, y, radio, 100, 100);
+		super(x, y, radio, 100, 100, false);
 		pointLight = new PointLight(GameScreen.rayHandler, 100, new Color(1f, 1f, 1f, .65f), 10,
 				GameScreen.indexedGraphImp.getNodes().get(0).getPosition().x,
 				GameScreen.indexedGraphImp.getNodes().get(0).getPosition().y);
 		pointLight.setSoft(false);
 		pointLight.attachToBody(body);
 		pointLight.setIgnoreAttachedBody(false);
-		pointLight.setContactFilter(Constants.BIT_LUZ, (short) 0, Constants.BIT_PARED);
+		pointLight.setContactFilter(Constants.BIT_LUZ, (short) 0, (short) (Constants.BIT_PARED | Constants.BIT_PUERTA_ENEMIGO));
 		reiniciar();
 	}
 

@@ -6,16 +6,20 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.studentdefender.juego.GameScreen;
 import com.studentdefender.utils.Constants;
 
 public class Node implements Location<Vector2> {
-    private Vector2 posicion;
+    private Body body;
     private boolean abajo;
     private int index;
 
     public Node(int x, int y, boolean abajo, int index) {
-        posicion = new Vector2(x, y);
+        body = createCircle(x, y);
         this.abajo = abajo;
         this.index = index;
     }
@@ -26,20 +30,16 @@ public class Node implements Location<Vector2> {
 
     @Override
     public boolean equals(Object obj) {
-        return posicion.epsilonEquals(((Node) obj).getPosicion());
+        return getIndex() == (((Node) obj).getIndex());
     }
 
     public int getIndex() {
         return index;
     }
 
-    public Vector2 getPosicion() {
-        return posicion;
-    }
-
     @Override
     public Vector2 getPosition() {
-        return posicion.cpy().scl(1 / Constants.PPM);
+        return body.getPosition();
     }
 
     @Override
@@ -71,12 +71,33 @@ public class Node implements Location<Vector2> {
     public void dibujar(SpriteBatch batch, BitmapFont font) {
         GameScreen.shapeRenderer.setColor(Color.WHITE);
         GameScreen.shapeRenderer.begin(ShapeType.Line);
-        GameScreen.shapeRenderer.circle(getPosicion().x, getPosicion().y, 10);
+        GameScreen.shapeRenderer.circle(getPosition().x * Constants.PPM, getPosition().y * Constants.PPM, 14);
         GameScreen.shapeRenderer.end();
         batch.begin();
-        font.draw(batch, Integer.toString(getIndex()), getPosicion().x - 3, getPosicion().y + 5);
-        font.draw(batch, "x: " + getPosition().x + ", y: " + getPosition().y, getPosicion().x - 60,
-                getPosicion().y - 15);
+        font.draw(batch, Integer.toString(getIndex()), getPosition().x * Constants.PPM - 3,
+                getPosition().y * Constants.PPM + 5);
+        font.draw(batch, "x: " + getPosition().x + ", y: " + getPosition().y, getPosition().x * Constants.PPM - 60,
+                getPosition().y * Constants.PPM - 15);
         batch.end();
+    }
+
+    private Body createCircle(float x, float y) {
+        Body pBody;
+        BodyDef def = new BodyDef();
+
+        def.type = BodyDef.BodyType.StaticBody;
+
+        def.position.set(x / Constants.PPM, y / Constants.PPM);
+        pBody = GameScreen.world.createBody(def);
+
+        CircleShape shape = new CircleShape();
+        shape.setRadius(1 / Constants.PPM);
+
+        FixtureDef fd = new FixtureDef();
+        fd.isSensor = true;
+        fd.shape = shape;
+        pBody.createFixture(fd).setUserData(this);
+        shape.dispose();
+        return pBody;
     }
 }

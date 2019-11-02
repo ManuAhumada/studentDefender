@@ -11,7 +11,7 @@ public class ConnectionImp implements Connection<Node> {
     public ConnectionImp(Node fromNode, Node toNode) {
         this.fromNode = fromNode;
         this.toNode = toNode;
-        cost = fromNode.getPosicion().dst(toNode.getPosicion());
+        cost = fromNode.getPosition().dst(toNode.getPosition());
     }
 
     @Override
