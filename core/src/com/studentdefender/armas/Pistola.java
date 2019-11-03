@@ -6,23 +6,15 @@ import com.studentdefender.juego.GameScreen;
 import com.studentdefender.personajes.Personaje;
 
 public class Pistola extends Arma {
-	protected int municionTotal;
-	protected int tamañoCartucho;
-	protected int municionEnArma;
+	
 
 	public Pistola(long cadencia, int daño, boolean automatica, int precio, int municionTotal, int tamañoCartucho,
 			int municionEnArma) {
-		super(cadencia, daño, automatica, precio);
-		this.municionTotal = municionTotal;
-		this.tamañoCartucho = tamañoCartucho;
-		this.municionEnArma = municionEnArma;
+		super(cadencia, daño, automatica, precio, municionTotal, tamañoCartucho, municionEnArma);
 	}
 
 	public Pistola() {
-		super(900000000, 10, false, 100);
-		this.municionTotal = 40;
-		this.tamañoCartucho = 6;
-		this.municionEnArma = 6;
+		super(900000000, 10, false, 100, 40, 6, 6);
 	}
 
 	public void atacar(Vector2 posicion, float angulo, Personaje atacante) {

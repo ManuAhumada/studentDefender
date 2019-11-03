@@ -36,7 +36,7 @@ import box2dLight.RayHandler;
 public class GameScreen implements Screen {
 	final StudentDefender game;
 
-	private final float SCALE = 2f;
+	private final float SCALE = Constants.DEBUG ? 1f : 2f;
 
 	public static ShapeRenderer shapeRenderer;
 
@@ -63,6 +63,7 @@ public class GameScreen implements Screen {
 	public static final Pool<Enemigo> enemigoPool = Pools.get(Enemigo.class);
 
 	private int cantEnemigos;
+	private int ronda;
 
 	public GameScreen(final StudentDefender game) {
 		this.game = game;
@@ -87,6 +88,7 @@ public class GameScreen implements Screen {
 				(int) (spawnsJugadores.get(1).getPosition().y * PPM), 7.5f));
 
 		cantEnemigos = 3;
+		ronda = 0;
 	}
 
 	private void crearMapa() {
@@ -118,10 +120,22 @@ public class GameScreen implements Screen {
 		b2dr.render(world, camara.combined.cpy().scl(PPM));
 		dibujar();
 		rayHandler.render();
+		dibujarInterfaz();
 
 		if (Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
 			this.pause();
 		}
+	}
+
+	private void dibujarInterfaz() {
+		int posCuadrox = 0;
+		for (Jugador jugador : jugadores) {
+			jugador.dibujarInterfaz(camara, game.batch, game.font, shapeRenderer, posCuadrox);
+			posCuadrox += 200;		
+		}
+		game.batch.begin();
+		game.font.draw(game.batch, "Round " + ronda, GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + 10, GameScreen.camara.position.y - GameScreen.camara.viewportHeight/2 + 20);
+		game.batch.end();
 	}
 
 	private void dibujar() {
@@ -175,8 +189,8 @@ public class GameScreen implements Screen {
 
 	private void spawnearEnemigos() {
 		if (enemigosActivos.isEmpty()) {
-			spawnearJugadores();
-			Gdx.app.log("Sistema", "Round " + cantEnemigos);
+			spawnearJugadores();		
+			Gdx.app.log("Sistema", "Round " + ++ronda);
 			for (int i = 0; i < cantEnemigos; i++) {
 				Vector2 posicion = spawnsEnemigos.get(MathUtils.random(spawnsEnemigos.size - 1)).getPosition();
 				enemigoPool.obtain().init((int) (posicion.x * PPM), (int) (posicion.y * PPM), 7.5f);

@@ -54,9 +54,9 @@ public abstract class Personaje implements Steerable<Vector2> {
 		FixtureDef fd = new FixtureDef();
 		fd.filter.categoryBits = isEnemy ? Constants.BIT_ENEMIGO : Constants.BIT_JUGADOR;
 		if (isEnemy) {
-			fd.filter.maskBits = Constants.BIT_BALA | Constants.BIT_PARED | Constants.BIT_JUGADOR;
+			fd.filter.maskBits = Constants.BIT_BALA | Constants.BIT_PARED | Constants.BIT_JUGADOR | Constants.BIT_ENEMIGO;
 		} else {
-			fd.filter.maskBits = Constants.BIT_BALA | Constants.BIT_PARED | Constants.BIT_JUGADOR | Constants.BIT_PUERTA_ENEMIGO;
+			fd.filter.maskBits = Constants.BIT_BALA | Constants.BIT_PARED | Constants.BIT_ENEMIGO | Constants.BIT_PUERTA_ENEMIGO | Constants.BIT_JUGADOR;
 		}
 		
 		fd.shape = shape;

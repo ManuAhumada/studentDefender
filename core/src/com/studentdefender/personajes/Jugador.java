@@ -6,8 +6,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -44,9 +46,8 @@ public class Jugador extends Personaje {
 	}
 
 	public void reiniciar() {
-		armas = new Arma[2];
-		armas[0] = new Pistola(250000000, 10, true, 100, 100, 10, 10);
-		armas[1] = new Pistola(500000000, 20, true, 100, 100, 10, 10);
+		armas = new Arma[1];
+		armas[0] = new Pistola(500000000, 10, false, 100, 100, 10, 10);
 		dinero = 0;
 		abatido = false;
 		muerto = false;
@@ -157,14 +158,6 @@ public class Jugador extends Personaje {
 
 	public void dibujar(SpriteBatch batch, BitmapFont font) {
 		super.dibujar(batch, font);
-		batch.begin();
-		if (!isAbatido()) {
-			font.draw(batch, vidaActual + "/" + vida, (getPosition().x - getBoundingRadius() * 3) * PPM,
-					getPosition().y * PPM + 30);
-		} else {
-			font.draw(batch, "ABATIDO", (getPosition().x - getBoundingRadius() * 3) * PPM, getPosition().y * PPM + 30);
-		}
-		batch.end();
 		if (jugadorReviviendo != null) {
 			GameScreen.shapeRenderer.setColor(Color.WHITE);
 			GameScreen.shapeRenderer.begin(ShapeType.Filled);
@@ -215,5 +208,18 @@ public class Jugador extends Personaje {
 	private void morir() {
 		muerto = true;
 		pointLight.setActive(false);
+	}
+
+	public void dibujarInterfaz(OrthographicCamera camara, SpriteBatch batch, BitmapFont font, ShapeRenderer shapeRenderer, int posCuadrox) {
+		int radioImagen = 30;
+		GameScreen.shapeRenderer.begin(ShapeType.Line);
+		GameScreen.shapeRenderer.setColor(Color.WHITE);
+		GameScreen.shapeRenderer.circle(GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + radioImagen + 10 + posCuadrox, GameScreen.camara.position.y + GameScreen.camara.viewportHeight/2 - radioImagen - 10, radioImagen);
+		GameScreen.shapeRenderer.end();
+		batch.begin();
+		font.draw(batch, "Vida: " + vidaActual + " / " + vida, GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, GameScreen.camara.position.y + GameScreen.camara.viewportHeight/2 - 10);
+		font.draw(batch, "Arma: " + armas[armaSeleccionada].getMunicionEnArma() + " / " + armas[armaSeleccionada].getTamañoCartucho(), GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, GameScreen.camara.position.y + GameScreen.camara.viewportHeight/2 - 30);
+		font.draw(batch, "Municion: " + armas[armaSeleccionada].getMunicionTotal(), GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, GameScreen.camara.position.y + GameScreen.camara.viewportHeight/2 - 50);
+		batch.end();
 	}
 }

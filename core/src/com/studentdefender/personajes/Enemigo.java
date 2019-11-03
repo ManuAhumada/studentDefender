@@ -137,10 +137,16 @@ public class Enemigo extends Personaje implements Poolable {
 
 	public void dibujar(SpriteBatch batch, BitmapFont font) {
 		super.dibujar(batch, font);
-		batch.begin();
-		font.draw(batch, vidaActual + "/" + vida, (getPosition().x - getBoundingRadius() * 3) * PPM,
-				getPosition().y * PPM + 30);
-		batch.end();
+		GameScreen.shapeRenderer.begin(ShapeType.Filled);
+		GameScreen.shapeRenderer.setColor(Color.GREEN);
+		GameScreen.shapeRenderer.rect((getPosition().x - getBoundingRadius()) * PPM, (getPosition().y + getBoundingRadius()) * PPM + 5, getBoundingRadius() * 2 * PPM * vidaActual / vida , 5);
+		GameScreen.shapeRenderer.setColor(Color.RED);
+		GameScreen.shapeRenderer.rect((getPosition().x - getBoundingRadius()) * PPM + getBoundingRadius() * 2 * PPM * vidaActual / vida, (getPosition().y + getBoundingRadius()) * PPM + 5, getBoundingRadius() * 2 * PPM * (vida - vidaActual) / vida , 5);
+		GameScreen.shapeRenderer.end();
+		// batch.begin();
+		// font.draw(batch, vidaActual + "/" + vida, (getPosition().x - getBoundingRadius() * 3) * PPM,
+		// 		getPosition().y * PPM + 30);
+		// batch.end();
 		if (Constants.DEBUG) {
 			GameScreen.shapeRenderer.begin(ShapeType.Line);
 			GameScreen.shapeRenderer.setColor(Color.RED);
