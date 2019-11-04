@@ -52,15 +52,15 @@ public class GameScreen implements Screen {
 
 	public static OrthographicCamera camara;
 
-	public static Array<Jugador> jugadores = new Array<Jugador>();
-	private static Array<Node> spawnsJugadores;
-	private static Array<Node> spawnsEnemigos;
+	public static Array<Jugador> jugadores;
+	private Array<Node> spawnsJugadores;
+	private Array<Node> spawnsEnemigos;
 
-	public static Array<Bala> balasActivas = new Array<Bala>();
-	public static Array<Enemigo> enemigosActivos = new Array<Enemigo>();
+	public static Array<Bala> balasActivas;
+	public static Array<Enemigo> enemigosActivos;
 
-	public static final Pool<Bala> balaPool = Pools.get(Bala.class);
-	public static final Pool<Enemigo> enemigoPool = Pools.get(Enemigo.class);
+	public static Pool<Bala> balaPool;
+	public static Pool<Enemigo> enemigoPool;
 
 	private int cantEnemigos;
 	private int ronda;
@@ -82,10 +82,16 @@ public class GameScreen implements Screen {
 
 		crearMapa();
 
+		jugadores = new Array<Jugador>();
 		jugadores.add(new Jugador((int) (spawnsJugadores.get(0).getPosition().x * PPM),
 				(int) (spawnsJugadores.get(0).getPosition().y * PPM), 7.5f));
 		jugadores.add(new JugadorTest((int) (spawnsJugadores.get(1).getPosition().x * PPM),
 				(int) (spawnsJugadores.get(1).getPosition().y * PPM), 7.5f));
+
+		balasActivas = new Array<Bala>();
+		balaPool = Pools.get(Bala.class);
+		enemigosActivos = new Array<Enemigo>();
+		enemigoPool = Pools.get(Enemigo.class);
 
 		cantEnemigos = 3;
 		ronda = 0;
@@ -108,23 +114,25 @@ public class GameScreen implements Screen {
 	public void render(float delta) {
 
 		update(delta);
+		
+		if (cheaquearFin()) {
+			Gdx.gl.glClearColor(0, 0, 0, 1);
+			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+			game.batch.setProjectionMatrix(camara.combined);
+			shapeRenderer.setProjectionMatrix(camara.combined);
+			rayHandler.setCombinedMatrix(camara.combined.cpy().scl(PPM));
 
-		game.batch.setProjectionMatrix(camara.combined);
-		shapeRenderer.setProjectionMatrix(camara.combined);
-		rayHandler.setCombinedMatrix(camara.combined.cpy().scl(PPM));
-
-		// tmr.render();
-		b2dr.render(world, camara.combined.cpy().scl(PPM));
-		dibujar();
-		rayHandler.render();
-		dibujarInterfaz();
-
-		if (Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
-			this.pause();
+			// tmr.render();
+			b2dr.render(world, camara.combined.cpy().scl(PPM));
+			dibujar();
+			rayHandler.render();
+			dibujarInterfaz();
+		} else {
+			dispose();
+			game.setScreen(new MainMenuScreen(game));
 		}
+		
 	}
 
 	private void dibujarInterfaz() {
@@ -157,14 +165,22 @@ public class GameScreen implements Screen {
 	private void update(float delta) {
 		world.step(1 / 60f, 6, 2);
 		rayHandler.update();
+		if(cheaquearFin()) {
+			actualizarBalas();
+			spawnearEnemigos();
+			actualizarEnemigos(delta);
+			actualizarJugadores(delta);
+			cameraUpdate(delta);
+			// tmr.setView(camara);
+		} 	
+	}
 
-		actualizarBalas();
-		spawnearEnemigos();
-		actualizarEnemigos(delta);
-		actualizarJugadores(delta);
-
-		cameraUpdate(delta);
-		// tmr.setView(camara);
+	private boolean cheaquearFin() {
+		for (Jugador jugador : jugadores) {
+			if(!(jugador.isMuerto() || jugador.isAbatido()))
+				return true;
+		}
+		return false;
 	}
 
 	private void actualizarJugadores(float delta) {
@@ -249,6 +265,18 @@ public class GameScreen implements Screen {
 		map.dispose();
 		tmr.dispose();
 		rayHandler.dispose();
+		shapeRenderer = null;
+		world = null;
+		rayHandler = null;
+		map = null;
+		indexedGraphImp = null;
+		indexedAStarPathFinder = null;
+		camara=null;
+		jugadores=null;
+		balasActivas=null;
+		enemigosActivos=null;
+		balaPool=null;
+		enemigoPool=null;
 	}
 
 }
