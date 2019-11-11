@@ -122,15 +122,17 @@ public class Enemigo extends Personaje implements Poolable {
 	public void atacar(Jugador jugador) {
 		if (TimeUtils.timeSinceNanos(ultimoAtaque) > 1300000000) {
 			ultimoAtaque = TimeUtils.nanoTime();
-			jugador.quitarVida(fuerza);
+			jugador.quitarVida(fuerza, this);
 		}
 	}
 
-	public void quitarVida(int vidaQuitada) {
-		super.quitarVida(vidaQuitada);
+	public void quitarVida(int vidaQuitada, Personaje atacante) {
+		super.quitarVida(vidaQuitada, atacante);
 		body.setLinearVelocity(0, 0);
 		if (vidaActual == 0) {
 			activo = false;
+			((Jugador) atacante).agregarDinero(10);
+			((Jugador) atacante).agregarBalas(12);
 		}
 	}
 

@@ -13,7 +13,6 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.studentdefender.armas.Arma;
 import com.studentdefender.juego.GameScreen;
 import com.studentdefender.utils.Constants;
 
@@ -21,8 +20,6 @@ public abstract class Personaje implements Steerable<Vector2> {
 	protected int vida;
 	protected int vidaActual;
 	protected float velocidad;
-	protected Arma armas[];
-	protected int armaSeleccionada;
 	protected Body body;
 	protected float maxLinearSpeed, maxLinearAcceleration, maxAngularSpeed, maxAngularAcceleration;
 	protected boolean isTagged;
@@ -77,7 +74,7 @@ public abstract class Personaje implements Steerable<Vector2> {
 		batch.end();
 	}
 
-	public void quitarVida(int vidaQuitada) {
+	public void quitarVida(int vidaQuitada, Personaje atacante) {
 		vidaActual -= vidaQuitada;
 		if (vidaActual < 0) {
 			vidaActual = 0;

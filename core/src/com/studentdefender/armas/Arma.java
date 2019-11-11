@@ -1,9 +1,11 @@
 package com.studentdefender.armas;
 
 import com.badlogic.gdx.math.Vector2;
-import com.studentdefender.personajes.Personaje;
+import com.badlogic.gdx.utils.TimeUtils;
+import com.studentdefender.juego.GameScreen;
+import com.studentdefender.personajes.Jugador;
 
-public abstract class Arma {
+public class Arma {
 	protected int daño;
 	protected long cadencia;
 	protected long ultimaVezUsada;
@@ -13,6 +15,10 @@ public abstract class Arma {
 	protected int tamañoCartucho;
 	protected int municionEnArma;
 	
+	public Arma() {
+		this(900000000, 10, false, 100, 40, 6, 6);
+	}
+
 	public Arma(long cadencia, int daño, boolean automatica, int precio, int municionTotal, int tamañoCartucho,
 	int municionEnArma) {
 		this.daño = daño;
@@ -25,9 +31,27 @@ public abstract class Arma {
 		this.municionEnArma = municionEnArma;
 	}
 	
-	public abstract void atacar(Vector2 posicion, float angulo, Personaje atacante);
-	
-	public abstract void recargar();
+	public void atacar(Vector2 posicion, float angulo, Jugador atacante) {
+		if ((TimeUtils.timeSinceNanos(ultimaVezUsada) > cadencia)) {
+			if (this.municionEnArma != 0) {
+				this.municionEnArma--;
+				this.ultimaVezUsada = TimeUtils.nanoTime();
+				GameScreen.balaPool.obtain().init(posicion, angulo, daño, atacante);
+			}
+		}
+	}
+
+	public void recargar() {
+		if (municionTotal != 0) {
+			if (municionTotal > tamañoCartucho - municionEnArma) {
+				municionTotal -= tamañoCartucho - municionEnArma;
+				municionEnArma = tamañoCartucho;
+			} else {
+				municionEnArma = municionTotal;
+				municionTotal = 0;
+			}
+		}
+	}
 	
 	public boolean isAutomatica() {
 		return automatica;
@@ -43,5 +67,9 @@ public abstract class Arma {
 
 	public int getMunicionEnArma() {
 		return municionEnArma;
+	}
+
+	public void agregarBalas(int balas) {
+		municionTotal += balas;
 	}
 }

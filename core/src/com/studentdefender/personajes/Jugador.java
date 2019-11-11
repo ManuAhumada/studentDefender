@@ -15,7 +15,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.studentdefender.armas.Arma;
-import com.studentdefender.armas.Pistola;
 import com.studentdefender.juego.GameScreen;
 import com.studentdefender.utils.Constants;
 
@@ -29,6 +28,7 @@ public class Jugador extends Personaje {
 	protected Jugador jugadorReviviendo;
 	protected long tiempoReviviendo;
 	PointLight pointLight;
+	protected Arma arma;
 
 	public static final long TIEMPO_REVIVIR = 3000000000L;
 	public static final long MAX_TIEMPO_ABATIDO = 30000000000L;
@@ -46,8 +46,7 @@ public class Jugador extends Personaje {
 	}
 
 	public void reiniciar() {
-		armas = new Arma[1];
-		armas[0] = new Pistola(500000000, 10, false, 100, 100, 10, 10);
+		arma = new Arma(500000000, 10, false, 100, 100, 10, 10);
 		dinero = 0;
 		abatido = false;
 		muerto = false;
@@ -65,7 +64,6 @@ public class Jugador extends Personaje {
 		if (!isAbatido()) {
 			recargar();
 			atacar();
-			cambiarArma();
 			revivir();
 		} else {
 			revisarAbatimiento();
@@ -79,9 +77,9 @@ public class Jugador extends Personaje {
 	}
 
 	protected void atacar() {
-		if ((armas[armaSeleccionada].isAutomatica() && Gdx.input.isButtonPressed(Buttons.LEFT))
-				|| (!armas[armaSeleccionada].isAutomatica() && Gdx.input.isButtonJustPressed(Buttons.LEFT))) {
-			armas[armaSeleccionada].atacar(getPosition(), body.getAngle(), this);
+		if ((arma.isAutomatica() && Gdx.input.isButtonPressed(Buttons.LEFT))
+				|| (!arma.isAutomatica() && Gdx.input.isButtonJustPressed(Buttons.LEFT))) {
+			arma.atacar(getPosition(), body.getAngle(), this);
 		}
 	}
 
@@ -127,7 +125,7 @@ public class Jugador extends Personaje {
 
 	protected void recargar() {
 		if (Gdx.input.isKeyJustPressed(Keys.R)) {
-			armas[armaSeleccionada].recargar();
+			arma.recargar();
 		}
 	}
 
@@ -140,19 +138,11 @@ public class Jugador extends Personaje {
 		}
 	}
 
-	public void quitarVida(int vidaQuitada) {
-		super.quitarVida(vidaQuitada);
+	public void quitarVida(int vidaQuitada, Personaje atacante) {
+		super.quitarVida(vidaQuitada, atacante);
 		if (vidaActual == 0 && !abatido) {
 			momentoAbatido = TimeUtils.nanoTime();
 			abatido = true;
-		}
-	}
-
-	protected void cambiarArma() {
-		if (Gdx.input.isKeyJustPressed(Keys.Q)) {
-			armaSeleccionada++;
-			if (armaSeleccionada == armas.length)
-				armaSeleccionada = 0;
 		}
 	}
 
@@ -210,6 +200,10 @@ public class Jugador extends Personaje {
 		pointLight.setActive(false);
 	}
 
+	public void agregarBalas(int balas) {
+		arma.agregarBalas(balas);
+	}
+
 	public void dibujarInterfaz(OrthographicCamera camara, SpriteBatch batch, BitmapFont font, ShapeRenderer shapeRenderer, int posCuadrox) {
 		int radioImagen = 30;
 		GameScreen.shapeRenderer.begin(ShapeType.Line);
@@ -218,8 +212,9 @@ public class Jugador extends Personaje {
 		GameScreen.shapeRenderer.end();
 		batch.begin();
 		font.draw(batch, "Vida: " + vidaActual + " / " + vida, GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, GameScreen.camara.position.y + GameScreen.camara.viewportHeight/2 - 10);
-		font.draw(batch, "Arma: " + armas[armaSeleccionada].getMunicionEnArma() + " / " + armas[armaSeleccionada].getTamañoCartucho(), GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, GameScreen.camara.position.y + GameScreen.camara.viewportHeight/2 - 30);
-		font.draw(batch, "Municion: " + armas[armaSeleccionada].getMunicionTotal(), GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, GameScreen.camara.position.y + GameScreen.camara.viewportHeight/2 - 50);
+		font.draw(batch, "Arma: " + arma.getMunicionEnArma() + " / " + arma.getTamañoCartucho(), GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, GameScreen.camara.position.y + GameScreen.camara.viewportHeight/2 - 30);
+		font.draw(batch, "Municion: " + arma.getMunicionTotal(), GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, GameScreen.camara.position.y + GameScreen.camara.viewportHeight/2 - 50);
+		font.draw(batch, "Plata: $" + this.dinero, GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, GameScreen.camara.position.y + GameScreen.camara.viewportHeight/2 - 70);
 		batch.end();
 	}
 }

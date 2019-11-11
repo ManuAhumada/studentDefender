@@ -11,11 +11,11 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.studentdefender.juego.GameScreen;
 import com.studentdefender.personajes.Enemigo;
-import com.studentdefender.personajes.Personaje;
+import com.studentdefender.personajes.Jugador;
 import com.studentdefender.utils.Constants;;
 
 public class Bala implements Poolable {
-	private Personaje disparador;
+	private Jugador disparador;
 	private Body body;
 	private int daño;
 	private int velocidad;
@@ -27,7 +27,7 @@ public class Bala implements Poolable {
 		body = createCircle(1f / PPM);
 	}
 
-	public void init(Vector2 posicion, float angulo, int daño, Personaje disparador) {
+	public void init(Vector2 posicion, float angulo, int daño, Jugador disparador) {
 		activo = true;
 		body.setActive(true);
 		this.daño = daño;
@@ -50,7 +50,8 @@ public class Bala implements Poolable {
 	public void impactar(Object objeto) {
 		if (objeto instanceof Enemigo) {
 			Enemigo enemigo = (Enemigo) objeto;
-			enemigo.quitarVida(daño);
+			enemigo.quitarVida(daño, disparador);
+			disparador.agregarDinero(5);
 		}
 		activo = false;
 	}
