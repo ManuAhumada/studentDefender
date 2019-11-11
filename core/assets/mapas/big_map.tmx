@@ -95,6 +95,80 @@
    <polygon points="0,0 -128,0 -128,384 0,384"/>
   </object>
  </objectgroup>
+ <objectgroup id="8" name="nodos">
+  <object id="143" x="128" y="480">
+   <point/>
+  </object>
+  <object id="144" x="512" y="128">
+   <point/>
+  </object>
+  <object id="145" x="992" y="128">
+   <point/>
+  </object>
+  <object id="146" x="1408" y="480">
+   <point/>
+  </object>
+  <object id="147" x="1408" y="896">
+   <point/>
+  </object>
+  <object id="148" x="128" y="896">
+   <point/>
+  </object>
+  <object id="149" x="480" y="1408">
+   <point/>
+  </object>
+  <object id="150" x="960" y="1408">
+   <point/>
+  </object>
+  <object id="152" x="416" y="928">
+   <point/>
+  </object>
+  <object id="153" x="416" y="544">
+   <point/>
+  </object>
+  <object id="154" x="576" y="448">
+   <point/>
+  </object>
+  <object id="155" x="960" y="448">
+   <point/>
+  </object>
+  <object id="157" x="768" y="480">
+   <point/>
+  </object>
+  <object id="158" x="768" y="1024">
+   <point/>
+  </object>
+  <object id="159" x="1120" y="512">
+   <point/>
+  </object>
+  <object id="160" x="1120" y="960">
+   <point/>
+  </object>
+  <object id="161" x="576" y="1056">
+   <point/>
+  </object>
+  <object id="162" x="960" y="1056">
+   <point/>
+  </object>
+  <object id="163" x="320" y="864">
+   <point/>
+  </object>
+  <object id="164" x="1216" y="864">
+   <point/>
+  </object>
+  <object id="165" x="1088" y="696">
+   <point/>
+  </object>
+  <object id="166" x="448" y="704">
+   <point/>
+  </object>
+  <object id="167" x="1280" y="544">
+   <point/>
+  </object>
+  <object id="168" x="256" y="544">
+   <point/>
+  </object>
+ </objectgroup>
  <objectgroup id="9" name="connections">
   <object id="169" x="128" y="480">
    <polyline points="0,0 128,64"/>
@@ -286,80 +360,6 @@
    <point/>
   </object>
   <object id="222" x="32" y="480">
-   <point/>
-  </object>
- </objectgroup>
- <objectgroup id="8" name="nodos">
-  <object id="143" x="128" y="480">
-   <point/>
-  </object>
-  <object id="144" x="512" y="128">
-   <point/>
-  </object>
-  <object id="145" x="992" y="128">
-   <point/>
-  </object>
-  <object id="146" x="1408" y="480">
-   <point/>
-  </object>
-  <object id="147" x="1408" y="896">
-   <point/>
-  </object>
-  <object id="148" x="128" y="896">
-   <point/>
-  </object>
-  <object id="149" x="480" y="1408">
-   <point/>
-  </object>
-  <object id="150" x="960" y="1408">
-   <point/>
-  </object>
-  <object id="152" x="416" y="928">
-   <point/>
-  </object>
-  <object id="153" x="416" y="544">
-   <point/>
-  </object>
-  <object id="154" x="576" y="448">
-   <point/>
-  </object>
-  <object id="155" x="960" y="448">
-   <point/>
-  </object>
-  <object id="157" x="768" y="480">
-   <point/>
-  </object>
-  <object id="158" x="768" y="1024">
-   <point/>
-  </object>
-  <object id="159" x="1120" y="512">
-   <point/>
-  </object>
-  <object id="160" x="1120" y="960">
-   <point/>
-  </object>
-  <object id="161" x="576" y="1056">
-   <point/>
-  </object>
-  <object id="162" x="960" y="1056">
-   <point/>
-  </object>
-  <object id="163" x="320" y="864">
-   <point/>
-  </object>
-  <object id="164" x="1216" y="864">
-   <point/>
-  </object>
-  <object id="165" x="1088" y="696">
-   <point/>
-  </object>
-  <object id="166" x="448" y="704">
-   <point/>
-  </object>
-  <object id="167" x="1280" y="544">
-   <point/>
-  </object>
-  <object id="168" x="256" y="544">
    <point/>
   </object>
  </objectgroup>

@@ -34,8 +34,8 @@ public class Jugador extends Personaje {
 	public static final long MAX_TIEMPO_ABATIDO = 30000000000L;
 
 	public Jugador(int x, int y, float radio) {
-		super(x, y, radio, 100, 100, false);
-		pointLight = new PointLight(GameScreen.rayHandler, 100, new Color(1f, 1f, 1f, .65f), 10,
+		super(x, y, radio, 100, 300, false);
+		pointLight = new PointLight(GameScreen.rayHandler, 100, new Color(1f, 1f, 1f, .65f), 20,
 				GameScreen.indexedGraphImp.getNodes().get(0).getPosition().x,
 				GameScreen.indexedGraphImp.getNodes().get(0).getPosition().y);
 		pointLight.setSoft(false);

@@ -33,7 +33,7 @@ public class Enemigo extends Personaje implements Poolable {
 	private GraphPathImp graphPath;
 
 	public Enemigo() {
-		super(0, 0, 0, 100, 100, true);
+		super(0, 0, 0, 100, 300, true);
 		fuerza = 10;
 		activo = false;
 		body.setActive(false);
@@ -73,23 +73,26 @@ public class Enemigo extends Personaje implements Poolable {
 	private void definirObjetivo() {
 		Location<Vector2> objetivo = this; // Si no encuentra nada que se quede en el lugar
 		Jugador jugadorCercano = encontrarJugadorMasCercano();
-		GameScreen.world.rayCast(GameScreen.rayCastCallback, getPosition(), jugadorCercano.getPosition());
+   		GameScreen.world.rayCast(GameScreen.rayCastCallback, getPosition(), jugadorCercano.getPosition());
 		if (GameScreen.rayCastCallback.isHit()) {
 			objetivo = jugadorCercano;
 			graphPath.clear();
 		} else {
 			Node nodoCercano = GameScreen.indexedGraphImp.getCloserNode(getPosition());
 			Node nodoCercanoEnemigo = GameScreen.indexedGraphImp.getCloserNode(jugadorCercano.getPosition());
+			graphPath.clear();
 			GameScreen.indexedAStarPathFinder.searchNodePath(nodoCercano, nodoCercanoEnemigo, new HeuristicImp(),
 					graphPath);
-			if (graphPath.getCount() == 1) {
-				objetivo = graphPath.get(0);
-			} else {
-				GameScreen.world.rayCast(GameScreen.rayCastCallback, getPosition(), graphPath.get(1).getPosition());
-				if (GameScreen.rayCastCallback.isHit()) {
-					objetivo = graphPath.get(1);
-				} else {
+			if (!(graphPath.getCount() == 0)) {
+				if (graphPath.getCount() == 1) {
 					objetivo = graphPath.get(0);
+				} else {
+					GameScreen.world.rayCast(GameScreen.rayCastCallback, getPosition(), graphPath.get(1).getPosition());
+					if (GameScreen.rayCastCallback.isHit()) {
+						objetivo = graphPath.get(1);
+					} else {
+						objetivo = graphPath.get(0);
+					}
 				}
 			}
 		}

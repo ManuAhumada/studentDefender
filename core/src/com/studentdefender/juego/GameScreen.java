@@ -84,9 +84,9 @@ public class GameScreen implements Screen {
 
 		jugadores = new Array<Jugador>();
 		jugadores.add(new Jugador((int) (spawnsJugadores.get(0).getPosition().x * PPM),
-				(int) (spawnsJugadores.get(0).getPosition().y * PPM), 7.5f));
+				(int) (spawnsJugadores.get(0).getPosition().y * PPM), 25f));
 		jugadores.add(new JugadorTest((int) (spawnsJugadores.get(1).getPosition().x * PPM),
-				(int) (spawnsJugadores.get(1).getPosition().y * PPM), 7.5f));
+				(int) (spawnsJugadores.get(1).getPosition().y * PPM), 25f));
 
 		balasActivas = new Array<Bala>();
 		balaPool = Pools.get(Bala.class);
@@ -98,7 +98,7 @@ public class GameScreen implements Screen {
 	}
 
 	private void crearMapa() {
-		map = new TmxMapLoader().load("mapas\\big_map.tmx");
+		map = new TmxMapLoader().load("mapas\\Mapa-PlantaBaja.tmx");
 		tmr = new OrthogonalTiledMapRenderer(map, game.batch);
 		TiledObjectUtil.parseTiledObjectLayer(world, map.getLayers().get("collision-layer").getObjects(), false);
 		TiledObjectUtil.parseTiledObjectLayer(world, map.getLayers().get("spawns-puertas").getObjects(), true);
@@ -209,7 +209,7 @@ public class GameScreen implements Screen {
 			Gdx.app.log("Sistema", "Round " + ++ronda);
 			for (int i = 0; i < cantEnemigos; i++) {
 				Vector2 posicion = spawnsEnemigos.get(MathUtils.random(spawnsEnemigos.size - 1)).getPosition();
-				enemigoPool.obtain().init((int) (posicion.x * PPM), (int) (posicion.y * PPM), 7.5f);
+				enemigoPool.obtain().init((int) (posicion.x * PPM), (int) (posicion.y * PPM), 20f);
 			}
 			cantEnemigos *= 1.5;
 		}
