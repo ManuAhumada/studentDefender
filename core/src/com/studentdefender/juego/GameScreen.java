@@ -6,8 +6,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -27,6 +25,7 @@ import com.studentdefender.personajes.Enemigo;
 import com.studentdefender.personajes.Jugador;
 import com.studentdefender.personajes.JugadorTest;
 import com.studentdefender.utils.Constants;
+import com.studentdefender.utils.Global;
 import com.studentdefender.utils.TiledObjectUtil;
 import com.studentdefender.utils.WorldContactListener;
 
@@ -37,8 +36,6 @@ public class GameScreen implements Screen {
 
 	private final float SCALE = Constants.DEBUG ? 1f : 2f;
 
-	public static ShapeRenderer shapeRenderer;
-
 	private Box2DDebugRenderer b2dr;
 	public static World world;
 	public static RayCastCallbackImp rayCastCallback;
@@ -48,8 +45,6 @@ public class GameScreen implements Screen {
 	public static TiledMap map;
 	public static IndexedGraphImp indexedGraphImp;
 	public static IndexedAStarPathFinder<Node> indexedAStarPathFinder;
-
-	public static OrthographicCamera camara;
 
 	public static Array<Jugador> jugadores;
 	private Array<Node> spawnsJugadores;
@@ -67,8 +62,7 @@ public class GameScreen implements Screen {
 	public GameScreen(final StudentDefender game) {
 		this.game = game;
 
-		camara = new OrthographicCamera();
-		camara.setToOrtho(false, Gdx.graphics.getWidth() / SCALE, Gdx.graphics.getHeight() / SCALE);
+		Global.camara.setToOrtho(false, Gdx.graphics.getWidth() / SCALE, Gdx.graphics.getHeight() / SCALE);
 
 		world = new World(new Vector2(0, 0), false);
 		world.setContactListener(new WorldContactListener());
@@ -76,8 +70,6 @@ public class GameScreen implements Screen {
 		rayHandler = new RayHandler(world);
 		rayHandler.setAmbientLight(Constants.DEBUG ? 1 : 0);
 		rayCastCallback = new RayCastCallbackImp();
-
-		shapeRenderer = new ShapeRenderer();
 
 		crearMapa();
 
@@ -98,7 +90,7 @@ public class GameScreen implements Screen {
 
 	private void crearMapa() {
 		map = new TmxMapLoader().load("mapas\\Mapa-PlantaBaja.tmx");
-		tmr = new OrthogonalTiledMapRenderer(map, game.batch);
+		tmr = new OrthogonalTiledMapRenderer(map, Global.batch);
 		TiledObjectUtil.parseTiledObjectLayer(world, map.getLayers().get("collision-layer").getObjects(), false);
 		TiledObjectUtil.parseTiledObjectLayer(world, map.getLayers().get("spawns-puertas").getObjects(), true);
 		indexedGraphImp = new IndexedGraphImp(
@@ -114,16 +106,16 @@ public class GameScreen implements Screen {
 
 		update(delta);
 		
-		if (cheaquearFin()) {
+		if (cheaquearFin()) {  
 			Gdx.gl.glClearColor(0, 0, 0, 1);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-			game.batch.setProjectionMatrix(camara.combined);
-			shapeRenderer.setProjectionMatrix(camara.combined);
-			rayHandler.setCombinedMatrix(camara.combined.cpy().scl(PPM));
+			Global.batch.setProjectionMatrix(Global.camara.combined);
+			Global.shapeRenderer.setProjectionMatrix(Global.camara.combined);
+			rayHandler.setCombinedMatrix(Global.camara.combined.cpy().scl(PPM));
 
 			// tmr.render();
-			b2dr.render(world, camara.combined.cpy().scl(PPM));
+			b2dr.render(world, Global.camara.combined.cpy().scl(PPM));
 			dibujar();
 			rayHandler.render();
 			dibujarInterfaz();
@@ -137,26 +129,26 @@ public class GameScreen implements Screen {
 	private void dibujarInterfaz() {
 		int posCuadrox = 0;
 		for (Jugador jugador : jugadores) {
-			jugador.dibujarInterfaz(camara, game.batch, game.font, shapeRenderer, posCuadrox);
+			jugador.dibujarInterfaz(posCuadrox);
 			posCuadrox += 200;		
 		}
-		game.batch.begin();
-		game.font.draw(game.batch, "Round " + ronda, GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + 10, GameScreen.camara.position.y - GameScreen.camara.viewportHeight/2 + 20);
-		game.batch.end();
+		Global.batch.begin();
+		Global  .font.draw(Global  .batch, "Round " + ronda, Global.camara.position.x - Global.camara.viewportWidth/2 + 10, Global.camara.position.y - Global.camara.viewportHeight/2 + 20);
+		Global  .batch.end();
 	}
 
 	private void dibujar() {
 		for (Enemigo enemigo : enemigosActivos) {
-			enemigo.dibujar(game.batch, game.font);
+			enemigo.dibujar();
 		}
 		for (Jugador jugador : jugadores) {
 			if (!jugador.isMuerto()) {
-				jugador.dibujar(game.batch, game.font);
+				jugador.dibujar();
 			}
 		}
 		if (Constants.DEBUG) {
 			for (Node node : indexedGraphImp.getNodes()) {
-				node.dibujar(game.batch, game.font);
+				node.dibujar(Global  .batch, Global  .font);
 			}
 		}
 	}
@@ -233,17 +225,17 @@ public class GameScreen implements Screen {
 	}
 
 	private void cameraUpdate(float delta) {
-		Vector3 position = camara.position;
-		position.x = camara.position.x + (((jugadores.first().getPosition().x * PPM) - camara.position.x) * .05f);
-		position.y = camara.position.y + (((jugadores.first().getPosition().y * PPM) - camara.position.y) * .05f);
-		camara.position.set(position);
+		Vector3 position = Global.camara.position;
+		position.x = Global.camara.position.x + (((jugadores.first().getPosition().x * PPM) - Global.camara.position.x) * .05f);
+		position.y = Global.camara.position.y + (((jugadores.first().getPosition().y * PPM) - Global.camara.position.y) * .05f);
+		Global.camara.position.set(position);
 
-		camara.update();
+		Global.camara.update();
 	}
 
 	public void resize(int width, int height) {
-		camara.setToOrtho(false, Gdx.graphics.getWidth() / SCALE, Gdx.graphics.getHeight() / SCALE);
-		camara.update();
+		Global.camara.setToOrtho(false, Gdx.graphics.getWidth() / SCALE, Gdx.graphics.getHeight() / SCALE);
+		Global.camara.update();
 	}
 
 	public void show() {
@@ -264,18 +256,15 @@ public class GameScreen implements Screen {
 		map.dispose();
 		tmr.dispose();
 		rayHandler.dispose();
-		shapeRenderer = null;
 		world = null;
 		rayHandler = null;
 		map = null;
 		indexedGraphImp = null;
 		indexedAStarPathFinder = null;
-		camara=null;
 		jugadores=null;
 		balasActivas=null;
 		enemigosActivos=null;
 		balaPool=null;
 		enemigoPool=null;
 	}
-
 }

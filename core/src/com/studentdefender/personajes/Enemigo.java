@@ -9,8 +9,6 @@ import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
 import com.badlogic.gdx.ai.steer.behaviors.Seek;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool.Poolable;
@@ -20,6 +18,7 @@ import com.studentdefender.path_finder.GraphPathImp;
 import com.studentdefender.path_finder.HeuristicImp;
 import com.studentdefender.path_finder.Node;
 import com.studentdefender.utils.Constants;
+import com.studentdefender.utils.Global;
 
 public class Enemigo extends Personaje implements Poolable {
 
@@ -140,33 +139,33 @@ public class Enemigo extends Personaje implements Poolable {
 		return activo;
 	}
 
-	public void dibujar(SpriteBatch batch, BitmapFont font) {
-		super.dibujar(batch, font);
-		GameScreen.shapeRenderer.begin(ShapeType.Filled);
-		GameScreen.shapeRenderer.setColor(Color.GREEN);
-		GameScreen.shapeRenderer.rect((getPosition().x - getBoundingRadius()) * PPM, (getPosition().y + getBoundingRadius()) * PPM + 5, getBoundingRadius() * 2 * PPM * vidaActual / vida , 5);
-		GameScreen.shapeRenderer.setColor(Color.RED);
-		GameScreen.shapeRenderer.rect((getPosition().x - getBoundingRadius()) * PPM + getBoundingRadius() * 2 * PPM * vidaActual / vida, (getPosition().y + getBoundingRadius()) * PPM + 5, getBoundingRadius() * 2 * PPM * (vida - vidaActual) / vida , 5);
-		GameScreen.shapeRenderer.end();
+	public void dibujar() {
+		super.dibujar();
+		Global.shapeRenderer.begin(ShapeType.Filled);
+		Global.shapeRenderer.setColor(Color.GREEN);
+		Global.shapeRenderer.rect((getPosition().x - getBoundingRadius()) * PPM, (getPosition().y + getBoundingRadius()) * PPM + 5, getBoundingRadius() * 2 * PPM * vidaActual / vida , 5);
+		Global.shapeRenderer.setColor(Color.RED);
+		Global.shapeRenderer.rect((getPosition().x - getBoundingRadius()) * PPM + getBoundingRadius() * 2 * PPM * vidaActual / vida, (getPosition().y + getBoundingRadius()) * PPM + 5, getBoundingRadius() * 2 * PPM * (vida - vidaActual) / vida , 5);
+		Global.shapeRenderer.end();
 		// batch.begin();
 		// font.draw(batch, vidaActual + "/" + vida, (getPosition().x - getBoundingRadius() * 3) * PPM,
 		// 		getPosition().y * PPM + 30);
 		// batch.end();
 		if (Constants.DEBUG) {
-			GameScreen.shapeRenderer.begin(ShapeType.Line);
-			GameScreen.shapeRenderer.setColor(Color.RED);
-			GameScreen.shapeRenderer.line(getPosition().cpy().scl(PPM),
+			Global.shapeRenderer.begin(ShapeType.Line);
+			Global.shapeRenderer.setColor(Color.RED);
+			Global.shapeRenderer.line(getPosition().cpy().scl(PPM),
 					encontrarJugadorMasCercano().getPosition().cpy().scl(PPM));
 			if (graphPath.getCount() > 1) {
-				GameScreen.shapeRenderer.line(getPosition().cpy().scl(PPM),
+				Global.shapeRenderer.line(getPosition().cpy().scl(PPM),
 						graphPath.get(1).getPosition().cpy().scl(PPM));
 			}
-			GameScreen.shapeRenderer.setColor(Color.WHITE);
-			GameScreen.shapeRenderer.end();
-			GameScreen.shapeRenderer.begin(ShapeType.Filled);
-			GameScreen.shapeRenderer.circle(GameScreen.rayCastCallback.getImpactPoint().cpy().scl(PPM).x,
+			Global.shapeRenderer.setColor(Color.WHITE);
+			Global.shapeRenderer.end();
+			Global.shapeRenderer.begin(ShapeType.Filled);
+			Global.shapeRenderer.circle(GameScreen.rayCastCallback.getImpactPoint().cpy().scl(PPM).x,
 					GameScreen.rayCastCallback.getImpactPoint().cpy().scl(PPM).y, 2);
-			GameScreen.shapeRenderer.end();
+			Global.shapeRenderer.end();
 		}
 	}
 }

@@ -6,10 +6,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -19,6 +15,7 @@ import com.studentdefender.juego.GameScreen;
 import com.studentdefender.mejoras.Mejora;
 import com.studentdefender.mejoras.Mejoras;
 import com.studentdefender.utils.Constants;
+import com.studentdefender.utils.Global;
 
 import box2dLight.PointLight;
 
@@ -103,7 +100,7 @@ public class Jugador extends Personaje {
 
 	protected void rotar() {
 		Vector3 mousePosition3D = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-		GameScreen.camara.unproject(mousePosition3D);
+		Global.camara.unproject(mousePosition3D);
 		Vector2 mousePosition2D = new Vector2(mousePosition3D.x, mousePosition3D.y);
 		Vector2 toTarget = mousePosition2D.sub(body.getPosition().scl(PPM)).nor();
 		float angulo = vectorToAngle(toTarget);
@@ -164,15 +161,15 @@ public class Jugador extends Personaje {
 		}
 	}
 
-	public void dibujar(SpriteBatch batch, BitmapFont font) {
-		super.dibujar(batch, font);
+	public void dibujar() {
+		super.dibujar();
 		if (jugadorReviviendo != null) {
-			GameScreen.shapeRenderer.setColor(Color.WHITE);
-			GameScreen.shapeRenderer.begin(ShapeType.Filled);
-			GameScreen.shapeRenderer.arc(jugadorReviviendo.getPosition().x * PPM,
+			Global.shapeRenderer.setColor(Color.WHITE);
+			Global.shapeRenderer.begin(ShapeType.Filled);
+			Global.shapeRenderer.arc(jugadorReviviendo.getPosition().x * PPM,
 					jugadorReviviendo.getPosition().y * PPM + 45, 8, 90,
 					((float) TimeUtils.timeSinceNanos(tiempoReviviendo) / tiempoRevivir) * 360);
-			GameScreen.shapeRenderer.end();
+			Global.shapeRenderer.end();
 		}
 	}
 
@@ -222,36 +219,36 @@ public class Jugador extends Personaje {
 		arma.agregarBalas(balas);
 	}
 
-	public void dibujarInterfaz(OrthographicCamera camara, SpriteBatch batch, BitmapFont font, ShapeRenderer shapeRenderer, int posCuadrox) {
+	public void dibujarInterfaz(int posCuadrox) {
 		int radioImagen = 30;
-		GameScreen.shapeRenderer.begin(ShapeType.Line);
-		GameScreen.shapeRenderer.setColor(Color.WHITE);
-		GameScreen.shapeRenderer.circle(GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + radioImagen + 10 + posCuadrox, GameScreen.camara.position.y + GameScreen.camara.viewportHeight/2 - radioImagen - 10, radioImagen);
+		Global.shapeRenderer.begin(ShapeType.Line);
+		Global.shapeRenderer.setColor(Color.WHITE);
+		Global.shapeRenderer.circle(Global.camara.position.x - Global.camara.viewportWidth/2 + radioImagen + 10 + posCuadrox, Global.camara.position.y + Global.camara.viewportHeight/2 - radioImagen - 10, radioImagen);
 		int posMejoraX = 300, ancho = 40;
 		for(Mejoras mejora : Mejoras.values()) {
-			GameScreen.shapeRenderer.box(GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + posMejoraX, GameScreen.camara.position.y - GameScreen.camara.viewportHeight/2, 0, ancho, ancho, 0);
+			Global.shapeRenderer.box(Global.camara.position.x - Global.camara.viewportWidth/2 + posMejoraX, Global.camara.position.y - Global.camara.viewportHeight/2, 0, ancho, ancho, 0);
 			posMejoraX += ancho;
 		}	
-		GameScreen.shapeRenderer.end();
+		Global.shapeRenderer.end();
 
-		batch.begin();
+		Global.batch.begin();
 		posMejoraX = 300;
 		
 		for(Mejoras mejora : Mejoras.values()) {
-			font.draw(batch, Integer.toString(mejora.ordinal() + 1) , GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + posMejoraX + 2, GameScreen.camara.position.y - GameScreen.camara.viewportHeight/2 + ancho);	
-			font.draw(batch, "$" + mejoras[mejora.ordinal()].getPrecio(), GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + posMejoraX + 2, GameScreen.camara.position.y - GameScreen.camara.viewportHeight/2 + 12);
+			Global.font.draw(Global.batch, Integer.toString(mejora.ordinal() + 1) , Global.camara.position.x - Global.camara.viewportWidth/2 + posMejoraX + 2, Global.camara.position.y - Global.camara.viewportHeight/2 + ancho);	
+			Global.font.draw(Global.batch, "$" + mejoras[mejora.ordinal()].getPrecio(), Global.camara.position.x - Global.camara.viewportWidth/2 + posMejoraX + 2, Global.camara.position.y - Global.camara.viewportHeight/2 + 12);
 			if(mejora.ordinal() != mejoras.length-1) {
-				batch.draw(mejora.getMejora().getIcono(), GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + posMejoraX + 8, GameScreen.camara.position.y - GameScreen.camara.viewportHeight/2 + 10, 24, 24);	
+				Global.batch.draw(mejora.getMejora().getIcono(), Global.camara.position.x - Global.camara.viewportWidth/2 + posMejoraX + 8, Global.camara.position.y - Global.camara.viewportHeight/2 + 10, 24, 24);	
 			} else {
-				font.draw(batch, mejoras[mejora.ordinal()].getNombre(), GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + posMejoraX + 2, GameScreen.camara.position.y - GameScreen.camara.viewportHeight/2 + 30);
+				Global.font.draw(Global.batch, mejoras[mejora.ordinal()].getNombre(), Global.camara.position.x - Global.camara.viewportWidth/2 + posMejoraX + 2, Global.camara.position.y - Global.camara.viewportHeight/2 + 30);
 			}
 			posMejoraX += ancho;
 		}
-		font.draw(batch, "Vida: " + vidaActual + " / " + vida, GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, GameScreen.camara.position.y + GameScreen.camara.viewportHeight/2 - 10);
-		font.draw(batch, "Arma: " + arma.getMunicionEnArma() + " / " + arma.getTamañoCartucho(), GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, GameScreen.camara.position.y + GameScreen.camara.viewportHeight/2 - 30);
-		font.draw(batch, "Municion: " + arma.getMunicionTotal(), GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, GameScreen.camara.position.y + GameScreen.camara.viewportHeight/2 - 50);
-		font.draw(batch, "Plata: $" + this.dinero, GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, GameScreen.camara.position.y + GameScreen.camara.viewportHeight/2 - 70);
-		batch.end();
+		Global.font.draw(Global.batch, "Vida: " + vidaActual + " / " + vida, Global.camara.position.x - Global.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, Global.camara.position.y + Global.camara.viewportHeight/2 - 10);
+		Global.font.draw(Global.batch, "Arma: " + arma.getMunicionEnArma() + " / " + arma.getTamañoCartucho(), Global.camara.position.x - Global.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, Global.camara.position.y + Global.camara.viewportHeight/2 - 30);
+		Global.font.draw(Global.batch, "Municion: " + arma.getMunicionTotal(), Global.camara.position.x - Global.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, Global.camara.position.y + Global.camara.viewportHeight/2 - 50);
+		Global.font.draw(Global.batch, "Plata: $" + this.dinero, Global.camara.position.x - Global.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, Global.camara.position.y + Global.camara.viewportHeight/2 - 70);
+		Global.batch.end();
 	}
 
 	public void setVida(int vida) {

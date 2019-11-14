@@ -6,8 +6,6 @@ import java.text.DecimalFormat;
 
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.utils.Location;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -15,6 +13,7 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.studentdefender.juego.GameScreen;
 import com.studentdefender.utils.Constants;
+import com.studentdefender.utils.Global;
 
 public abstract class Personaje implements Steerable<Vector2> {
 	protected int vida;
@@ -64,14 +63,14 @@ public abstract class Personaje implements Steerable<Vector2> {
 
 	public abstract void actualizar(float delta);
 
-	public void dibujar(SpriteBatch batch, BitmapFont font) {
-		batch.begin();
+	public void dibujar() {
+		Global.batch.begin();
 		if (Constants.DEBUG) {
 			DecimalFormat f = new DecimalFormat("#.##");
-			font.draw(batch, "x: " + f.format(getPosition().x) + ", y: " + f.format(getPosition().y),
+			Global.font.draw(Global.batch, "x: " + f.format(getPosition().x) + ", y: " + f.format(getPosition().y),
 					getPosition().x * PPM - 55, getPosition().y * PPM - 10);
 		}
-		batch.end();
+		Global.batch.end();
 	}
 
 	public void quitarVida(int vidaQuitada, Personaje atacante) {

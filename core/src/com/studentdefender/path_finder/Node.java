@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.studentdefender.juego.GameScreen;
 import com.studentdefender.utils.Constants;
+import com.studentdefender.utils.Global;
 
 public class Node implements Location<Vector2> {
     private Body body;
@@ -69,10 +70,10 @@ public class Node implements Location<Vector2> {
     }
 
     public void dibujar(SpriteBatch batch, BitmapFont font) {
-        GameScreen.shapeRenderer.setColor(Color.WHITE);
-        GameScreen.shapeRenderer.begin(ShapeType.Line);
-        GameScreen.shapeRenderer.circle(getPosition().x * Constants.PPM, getPosition().y * Constants.PPM, 14);
-        GameScreen.shapeRenderer.end();
+        Global.shapeRenderer.setColor(Color.WHITE);
+        Global.shapeRenderer.begin(ShapeType.Line);
+        Global.shapeRenderer.circle(getPosition().x * Constants.PPM, getPosition().y * Constants.PPM, 14);
+        Global.shapeRenderer.end();
         batch.begin();
         font.draw(batch, Integer.toString(getIndex()), getPosition().x * Constants.PPM - 3,
                 getPosition().y * Constants.PPM + 5);

@@ -4,16 +4,11 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.studentdefender.utils.Global;
 
 public class StudentDefender extends Game {
-	SpriteBatch batch;
-	BitmapFont font;
 
 	public void create() {
-		batch = new SpriteBatch();
-		font = new BitmapFont();
 		setScreen(new MainMenuScreen(this));
 	}
 
@@ -27,7 +22,8 @@ public class StudentDefender extends Game {
 	}
 
 	public void dispose() {
-		batch.dispose();
-		font.dispose();
+		Global.batch.dispose();
+		Global.font.dispose();
+		Global.shapeRenderer.dispose();
 	}
 }
