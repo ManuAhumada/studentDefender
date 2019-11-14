@@ -24,6 +24,7 @@ import com.studentdefender.path_finder.RayCastCallbackImp;
 import com.studentdefender.personajes.Enemigo;
 import com.studentdefender.personajes.Jugador;
 import com.studentdefender.personajes.JugadorTest;
+import com.studentdefender.personajes.Profesores;
 import com.studentdefender.utils.Constants;
 import com.studentdefender.utils.Global;
 import com.studentdefender.utils.TiledObjectUtil;
@@ -59,7 +60,7 @@ public class GameScreen implements Screen {
 	private int cantEnemigos;
 	private int ronda;
 
-	public GameScreen(final StudentDefender game) {
+	public GameScreen(final StudentDefender game, Profesores profesorSeleccionado) {
 		this.game = game;
 
 		Global.camara.setToOrtho(false, Gdx.graphics.getWidth() / SCALE, Gdx.graphics.getHeight() / SCALE);
@@ -75,9 +76,9 @@ public class GameScreen implements Screen {
 
 		jugadores = new Array<Jugador>();
 		jugadores.add(new Jugador((int) (spawnsJugadores.get(0).getPosition().x * PPM),
-				(int) (spawnsJugadores.get(0).getPosition().y * PPM), 25f));
+				(int) (spawnsJugadores.get(0).getPosition().y * PPM), 25f, profesorSeleccionado));
 		jugadores.add(new JugadorTest((int) (spawnsJugadores.get(1).getPosition().x * PPM),
-				(int) (spawnsJugadores.get(1).getPosition().y * PPM), 25f));
+				(int) (spawnsJugadores.get(1).getPosition().y * PPM), 25f, profesorSeleccionado));
 
 		balasActivas = new Array<Bala>();
 		balaPool = Pools.get(Bala.class);
