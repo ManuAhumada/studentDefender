@@ -57,6 +57,10 @@ public class Arma {
 		return automatica;
 	}
 
+	public void setAutomatica(boolean esAutomatica) {
+		automatica = esAutomatica;
+	}
+
 	public int getMunicionTotal() {
 		return municionTotal;
 	}
@@ -65,11 +69,31 @@ public class Arma {
 		return tamañoCartucho;
 	}
 
+	public void setTamañoCartucho(int tamañoCartucho) {
+		this.tamañoCartucho = tamañoCartucho;
+	}
+
 	public int getMunicionEnArma() {
 		return municionEnArma;
 	}
 
 	public void agregarBalas(int balas) {
 		municionTotal += balas;
+	}
+
+	public int getDaño() {
+		return daño;
+	}
+
+	public void setDaño(int daño) {
+		this.daño = daño;
+	}
+
+	public long getCadencia() {
+		return cadencia;
+	}
+
+	public void setCadencia(long cadencia) {
+		this.cadencia = cadencia;
 	}
 }

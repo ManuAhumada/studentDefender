@@ -16,12 +16,15 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.studentdefender.armas.Arma;
 import com.studentdefender.juego.GameScreen;
+import com.studentdefender.mejoras.Mejora;
+import com.studentdefender.mejoras.Mejoras;
 import com.studentdefender.utils.Constants;
 
 import box2dLight.PointLight;
 
 public class Jugador extends Personaje {
 	protected int dinero;
+	protected float multiplicadorDinero;
 	protected boolean abatido;
 	protected boolean muerto;
 	protected long momentoAbatido;
@@ -29,8 +32,8 @@ public class Jugador extends Personaje {
 	protected long tiempoReviviendo;
 	PointLight pointLight;
 	protected Arma arma;
-
-	public static final long TIEMPO_REVIVIR = 3000000000L;
+	protected Mejora[] mejoras;
+	protected long tiempoRevivir = 3000000000L;
 	public static final long MAX_TIEMPO_ABATIDO = 30000000000L;
 
 	public Jugador(int x, int y, float radio) {
@@ -43,6 +46,12 @@ public class Jugador extends Personaje {
 		pointLight.setIgnoreAttachedBody(false);
 		pointLight.setContactFilter(Constants.BIT_LUZ, (short) 0, (short) (Constants.BIT_PARED | Constants.BIT_PUERTA_ENEMIGO));
 		reiniciar();
+		mejoras = new Mejora[Mejoras.values().length];
+		for (int i = 0; i < Mejoras.values().length; i++) {
+			mejoras[i] = Mejoras.values()[i].getMejora();
+			mejoras[i].setJugador(this);
+		}
+		multiplicadorDinero = 1;
 	}
 
 	public void reiniciar() {
@@ -65,8 +74,17 @@ public class Jugador extends Personaje {
 			recargar();
 			atacar();
 			revivir();
+			revisarMejoras();
 		} else {
 			revisarAbatimiento();
+		}
+	}
+
+	private void revisarMejoras() {
+		for (int i = Keys.NUM_1; i <= Keys.NUM_7; i++) {
+			if (Gdx.input.isKeyJustPressed(i)) {
+				mejoras[i - Keys.NUM_1].seleccionarMejora();
+			}	
 		}
 	}
 
@@ -120,7 +138,7 @@ public class Jugador extends Personaje {
 	}
 
 	public void agregarDinero(int dinero) {
-		this.dinero += dinero;
+		this.dinero += dinero * multiplicadorDinero;
 	}
 
 	protected void recargar() {
@@ -153,7 +171,7 @@ public class Jugador extends Personaje {
 			GameScreen.shapeRenderer.begin(ShapeType.Filled);
 			GameScreen.shapeRenderer.arc(jugadorReviviendo.getPosition().x * PPM,
 					jugadorReviviendo.getPosition().y * PPM + 45, 8, 90,
-					((float) TimeUtils.timeSinceNanos(tiempoReviviendo) / TIEMPO_REVIVIR) * 360);
+					((float) TimeUtils.timeSinceNanos(tiempoReviviendo) / tiempoRevivir) * 360);
 			GameScreen.shapeRenderer.end();
 		}
 	}
@@ -163,7 +181,7 @@ public class Jugador extends Personaje {
 			if (jugadorReviviendo != null) {
 				if (getPosition().dst(jugadorReviviendo
 						.getPosition()) < (getBoundingRadius() + jugadorReviviendo.getBoundingRadius()) * 2.5) {
-					if (TimeUtils.timeSinceNanos(tiempoReviviendo) > TIEMPO_REVIVIR) {
+					if (TimeUtils.timeSinceNanos(tiempoReviviendo) > tiempoRevivir) {
 						jugadorReviviendo.agregarVida(50);
 						jugadorReviviendo.abatido = false;
 						jugadorReviviendo = null;
@@ -209,12 +227,58 @@ public class Jugador extends Personaje {
 		GameScreen.shapeRenderer.begin(ShapeType.Line);
 		GameScreen.shapeRenderer.setColor(Color.WHITE);
 		GameScreen.shapeRenderer.circle(GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + radioImagen + 10 + posCuadrox, GameScreen.camara.position.y + GameScreen.camara.viewportHeight/2 - radioImagen - 10, radioImagen);
+		int posMejoraX = 300, ancho = 40;
+		for(Mejoras mejora : Mejoras.values()) {
+			GameScreen.shapeRenderer.box(GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + posMejoraX, GameScreen.camara.position.y - GameScreen.camara.viewportHeight/2, 0, ancho, ancho, 0);
+			posMejoraX += ancho;
+		}	
 		GameScreen.shapeRenderer.end();
+
 		batch.begin();
+		posMejoraX = 300;
+		
+		for(Mejoras mejora : Mejoras.values()) {
+			font.draw(batch, Integer.toString(mejora.ordinal() + 1) , GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + posMejoraX + 2, GameScreen.camara.position.y - GameScreen.camara.viewportHeight/2 + ancho);	
+			font.draw(batch, "$" + mejoras[mejora.ordinal()].getPrecio(), GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + posMejoraX + 2, GameScreen.camara.position.y - GameScreen.camara.viewportHeight/2 + 12);
+			if(mejora.ordinal() != mejoras.length-1) {
+				batch.draw(mejora.getMejora().getIcono(), GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + posMejoraX + 8, GameScreen.camara.position.y - GameScreen.camara.viewportHeight/2 + 10, 24, 24);	
+			} else {
+				font.draw(batch, mejoras[mejora.ordinal()].getNombre(), GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + posMejoraX + 2, GameScreen.camara.position.y - GameScreen.camara.viewportHeight/2 + 30);
+			}
+			posMejoraX += ancho;
+		}
 		font.draw(batch, "Vida: " + vidaActual + " / " + vida, GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, GameScreen.camara.position.y + GameScreen.camara.viewportHeight/2 - 10);
 		font.draw(batch, "Arma: " + arma.getMunicionEnArma() + " / " + arma.getTamañoCartucho(), GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, GameScreen.camara.position.y + GameScreen.camara.viewportHeight/2 - 30);
 		font.draw(batch, "Municion: " + arma.getMunicionTotal(), GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, GameScreen.camara.position.y + GameScreen.camara.viewportHeight/2 - 50);
 		font.draw(batch, "Plata: $" + this.dinero, GameScreen.camara.position.x - GameScreen.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, GameScreen.camara.position.y + GameScreen.camara.viewportHeight/2 - 70);
 		batch.end();
+	}
+
+	public void setVida(int vida) {
+		this.vida = vida;
+	}
+
+	public int getVida() {
+		return this.vida;
+	}
+
+	public Arma getArma() {
+		return arma;
+	}
+
+	public long getTiempoRevivir() {
+		return tiempoRevivir;
+	}
+
+	public void setTiempoRevivir(long tiempoRevivir) {
+		this.tiempoRevivir = tiempoRevivir;
+	}
+
+	public float getMultiplicadorDinero() {
+		return multiplicadorDinero;
+	}
+
+	public void setMultiplicadorDinero(float multiplicadorDinero) {
+		this.multiplicadorDinero = multiplicadorDinero;
 	}
 }
