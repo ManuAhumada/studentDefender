@@ -32,8 +32,9 @@ public class Jugador extends Personaje {
 	protected Mejora[] mejoras;
 	protected long tiempoRevivir = 3000000000L;
 	public static final long MAX_TIEMPO_ABATIDO = 30000000000L;
+	protected Profesores profesor;
 
-	public Jugador(int x, int y, float radio) {
+	public Jugador(int x, int y, float radio, Profesores profesor) {
 		super(x, y, radio, 100, 300, false);
 		pointLight = new PointLight(GameScreen.rayHandler, 100, new Color(1f, 1f, 1f, .65f), 20,
 				GameScreen.indexedGraphImp.getNodes().get(0).getPosition().x,
@@ -49,6 +50,7 @@ public class Jugador extends Personaje {
 			mejoras[i].setJugador(this);
 		}
 		multiplicadorDinero = 1;
+		this.profesor = profesor;
 	}
 
 	public void reiniciar() {
@@ -244,6 +246,8 @@ public class Jugador extends Personaje {
 			}
 			posMejoraX += ancho;
 		}
+		Global.batch.draw(profesor.getImagen(), Global.camara.position.x - Global.camara.viewportWidth/2 + radioImagen + 10 + posCuadrox - radioImagen + 5, Global.camara.position.y + Global.camara.viewportHeight/2 - radioImagen - 10 - radioImagen + 10, (float) (radioImagen*1.5),(float) (radioImagen*1.5));
+		Global.font.draw(Global.batch, profesor.getNombre(), Global.camara.position.x - Global.camara.viewportWidth/2 + radioImagen + 10 + posCuadrox - radioImagen + 5, Global.camara.position.y + Global.camara.viewportHeight/2 - 70);
 		Global.font.draw(Global.batch, "Vida: " + vidaActual + " / " + vida, Global.camara.position.x - Global.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, Global.camara.position.y + Global.camara.viewportHeight/2 - 10);
 		Global.font.draw(Global.batch, "Arma: " + arma.getMunicionEnArma() + " / " + arma.getTamañoCartucho(), Global.camara.position.x - Global.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, Global.camara.position.y + Global.camara.viewportHeight/2 - 30);
 		Global.font.draw(Global.batch, "Municion: " + arma.getMunicionTotal(), Global.camara.position.x - Global.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, Global.camara.position.y + Global.camara.viewportHeight/2 - 50);
