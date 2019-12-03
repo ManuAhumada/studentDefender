@@ -32,12 +32,6 @@ public class Jugador extends Personaje {
 
 	public Jugador(int x, int y, float radio, Profesores profesor) {
 		super(x, y, radio, 100, 300, false);
-		pointLight = new PointLight(GameScreen.rayHandler, 100, new Color(1f, 1f, 1f, .65f), 20, x, y);
-		pointLight.setSoft(false);
-		pointLight.attachToBody(body);
-		pointLight.setIgnoreAttachedBody(false);
-		pointLight.setContactFilter(Constants.BIT_LUZ, (short) 0,
-				(short) (Constants.BIT_PARED | Constants.BIT_PUERTA_ENEMIGO));
 		mejoras = new Mejora[Mejoras.values().length];
 		this.profesor = profesor;
 	}
@@ -107,7 +101,7 @@ public class Jugador extends Personaje {
 		if (jugadorReviviendo != null) {
 			Global.shapeRenderer.setColor(Color.WHITE);
 			Global.shapeRenderer.begin(ShapeType.Filled);
-			Global.shapeRenderer.arc(jugadorReviviendo.posicion.x * PPM, jugadorReviviendo.posicion.y * PPM + 45, 8, 90,
+			Global.shapeRenderer.arc(jugadorReviviendo.posicion.x, jugadorReviviendo.posicion.y + 45, 8, 90,
 					((float) TimeUtils.timeSinceNanos(tiempoReviviendo) / tiempoRevivir) * 360);
 			Global.shapeRenderer.end();
 		}

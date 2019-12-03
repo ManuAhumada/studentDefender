@@ -3,14 +3,17 @@ package com.studentdefender.juego;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.studentdefender.conexion.HiloCliente;
+import com.studentdefender.conexion.Mensaje;
 import com.studentdefender.utils.Global;
-
 
 public class MainMenuScreen implements Screen {
 	final StudentDefender game;
+	boolean wasTouched;
 
 	public MainMenuScreen(final StudentDefender game) {
 		this.game = game;
+		this.wasTouched = false;
 
 		Global.camara.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
@@ -29,14 +32,26 @@ public class MainMenuScreen implements Screen {
 				Gdx.graphics.getHeight() / 2);
 		Global.batch.end();
 
-		if (Gdx.input.isTouched()) {
-			game.setScreen(new PantallaSeleccion(game));
-			dispose();
+		if (Gdx.input.isTouched() && !wasTouched) {
+			wasTouched = true;
+			Global.servidor = new HiloCliente();
+			Global.servidor.start();
+		}
+		if (wasTouched) {
+			if (!Global.mensaje.isEmpty()) {
+				Mensaje mensaje = Global.mensaje.get(0);
+				System.out.println(mensaje.mensaje);
+				if (Global.mensaje != null && mensaje.mensaje instanceof String
+						&& ((String) mensaje.mensaje).equals("conectado")) {
+					Global.jugador = mensaje.jugador;
+					game.setScreen(new PantallaSeleccion(game));
+					dispose();
+				}
+			}
 		}
 	}
 
 	public void show() {
-
 	}
 
 	public void resize(int width, int height) {
