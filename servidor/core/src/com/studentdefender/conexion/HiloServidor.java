@@ -105,4 +105,10 @@ public class HiloServidor extends Thread {
 			e.printStackTrace();
 		}
 	}
+
+	public void reiniciar() {
+		Global.etapa = Etapas.CONEXION;
+		ips = new InetAddress[cantMax];
+		puertos = new int[cantMax];
+	}
 }

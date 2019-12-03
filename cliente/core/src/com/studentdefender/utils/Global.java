@@ -17,4 +17,7 @@ public final class Global {
     public static HiloCliente servidor;
     public static int jugador = -1;
     public static ArrayList<Mensaje> mensaje = new ArrayList<>();
+
+    public static final short BIT_LUZ = 2;
+    public static final short BIT_PARED = 4;
 }

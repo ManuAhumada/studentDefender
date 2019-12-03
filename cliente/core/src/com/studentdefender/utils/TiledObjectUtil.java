@@ -27,15 +27,13 @@ public class TiledObjectUtil {
 
             FixtureDef fd = new FixtureDef();
             fd.shape = shape;
+            fd.filter.categoryBits = Global.BIT_PARED;
+            fd.filter.maskBits = Global.BIT_LUZ;
             Body body;
             BodyDef bdef = new BodyDef();
             bdef.type = BodyDef.BodyType.StaticBody;
             body = world.createBody(bdef);
-
-            if (!enemyCanPass)
-                body.createFixture(fd).setUserData("Wall");
-            else
-                body.createFixture(fd);
+            body.createFixture(fd);
 
             shape.dispose();
         }

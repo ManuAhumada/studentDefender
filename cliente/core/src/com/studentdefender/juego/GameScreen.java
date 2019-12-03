@@ -83,12 +83,11 @@ public class GameScreen implements Screen {
 			rayHandler.setCombinedMatrix(Global.camara.combined.cpy());
 
 			b2dr.render(world, Global.camara.combined.cpy().scl(32f));
-			// tmr.render();
+			tmr.render();
 			dibujar();
 			rayHandler.render();
 			dibujarInterfaz();
 		} else {
-			Gdx.app.exit();
 			dispose();
 			game.setScreen(new MainMenuScreen(game));
 		}
@@ -103,7 +102,7 @@ public class GameScreen implements Screen {
 		if (jugadores.length > 0)
 			jugadores[Global.jugador].dibujarMejoras();
 		Global.batch.begin();
-		Global.font.draw(Global.batch, "Round " + ronda,
+		Global.font.draw(Global.batch, "Round " + (ronda + 1),
 				Global.camara.position.x - Global.camara.viewportWidth / 2 + 10,
 				Global.camara.position.y - Global.camara.viewportHeight / 2 + 20);
 		Global.batch.end();
@@ -174,9 +173,9 @@ public class GameScreen implements Screen {
 	private void cameraUpdate(float delta) {
 		Vector3 position = Global.camara.position;
 		position.x = Global.camara.position.x
-				+ (((jugadores[Global.jugador].getPosicion().x) - Global.camara.position.x) * .05f);
+				+ (((jugadores[Global.jugador].getPosicion().x) - Global.camara.position.x) * .075f);
 		position.y = Global.camara.position.y
-				+ (((jugadores[Global.jugador].getPosicion().y) - Global.camara.position.y) * .05f);
+				+ (((jugadores[Global.jugador].getPosicion().y) - Global.camara.position.y) * .075f);
 		Global.camara.position.set(position);
 
 		Global.camara.update();

@@ -35,9 +35,9 @@ public class Jugador extends Personaje {
 
 	public Jugador(JugadorRed jugador) {
 		super(jugador.x, jugador.y, jugador.radio, jugador.vida, jugador.vidaActual, jugador.orientacion);
-		pointLight = new PointLight(GameScreen.rayHandler, 100, new Color(1f, 1f, 1f, .75f), 600, jugador.x, jugador.y);
+		pointLight = new PointLight(GameScreen.rayHandler, 100, new Color(1f, 1f, 1f, .65f), 600, jugador.x, jugador.y);
 		pointLight.setSoft(false);
-		pointLight.setIgnoreAttachedBody(false);
+		pointLight.setContactFilter(Global.BIT_LUZ, (short) 0, (short) (Global.BIT_PARED));
 		this.dinero = jugador.dinero;
 		this.abatido = jugador.abatido;
 		this.muerto = jugador.muerto;

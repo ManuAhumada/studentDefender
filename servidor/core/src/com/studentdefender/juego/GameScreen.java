@@ -33,6 +33,7 @@ import com.studentdefender.personajes.Enemigo;
 import com.studentdefender.personajes.Jugador;
 import com.studentdefender.personajes.Profesores;
 import com.studentdefender.utils.Constants;
+import com.studentdefender.utils.Etapas;
 import com.studentdefender.utils.Global;
 import com.studentdefender.utils.TiledObjectUtil;
 import com.studentdefender.utils.WorldContactListener;
@@ -133,10 +134,10 @@ public class GameScreen implements Screen {
 			rayHandler.render();
 			dibujarInterfaz();
 		} else {
-			Gdx.app.exit();
 			Global.servidor.enviarMensaje("fin");
-			dispose();
+			Global.servidor.reiniciar();
 			game.setScreen(new PantallaSeleccion(game));
+			dispose();
 		}
 
 	}

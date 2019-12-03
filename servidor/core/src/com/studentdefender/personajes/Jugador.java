@@ -13,6 +13,12 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.studentdefender.armas.Arma;
 import com.studentdefender.juego.GameScreen;
 import com.studentdefender.mejoras.Mejora;
+import com.studentdefender.mejoras.MejoraAtaque;
+import com.studentdefender.mejoras.MejoraDinero;
+import com.studentdefender.mejoras.MejoraMunicion;
+import com.studentdefender.mejoras.MejoraRevivir;
+import com.studentdefender.mejoras.MejoraVelocidad;
+import com.studentdefender.mejoras.MejoraVida;
 import com.studentdefender.mejoras.Mejoras;
 import com.studentdefender.utils.Constants;
 import com.studentdefender.utils.Global;
@@ -48,8 +54,13 @@ public class Jugador extends Personaje {
 				(short) (Constants.BIT_PARED | Constants.BIT_PUERTA_ENEMIGO));
 		reiniciar();
 		mejoras = new Mejora[Mejoras.values().length];
-		for (int i = 0; i < Mejoras.values().length; i++) {
-			mejoras[i] = Mejoras.values()[i].getMejora();
+		mejoras[0] = new MejoraVida();
+		mejoras[1] = new MejoraAtaque();
+		mejoras[2] = new MejoraVelocidad();
+		mejoras[3] = new MejoraMunicion();
+		mejoras[4] = new MejoraDinero();
+		mejoras[5] = new MejoraRevivir();
+		for (int i = 0; i < mejoras.length; i++) {
 			mejoras[i].setJugador(this);
 		}
 		multiplicadorDinero = 1;
@@ -189,7 +200,7 @@ public class Jugador extends Personaje {
 
 	public void revivir(ArrayList<Integer> inputs) {
 		if (inputs.contains(Keys.E)) {
-			if (jugadorReviviendo != null) {
+			if (jugadorReviviendo != null && !jugadorReviviendo.muerto) {
 				if (getPosition().dst(jugadorReviviendo
 						.getPosition()) < (getBoundingRadius() + jugadorReviviendo.getBoundingRadius()) * 2.5) {
 					if (TimeUtils.timeSinceNanos(tiempoReviviendo) > tiempoRevivir) {
