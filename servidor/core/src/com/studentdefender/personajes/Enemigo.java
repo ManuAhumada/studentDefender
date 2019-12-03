@@ -72,7 +72,7 @@ public class Enemigo extends Personaje implements Poolable {
 	private void definirObjetivo() {
 		Location<Vector2> objetivo = this; // Si no encuentra nada que se quede en el lugar
 		Jugador jugadorCercano = encontrarJugadorMasCercano();
-   		GameScreen.world.rayCast(GameScreen.rayCastCallback, getPosition(), jugadorCercano.getPosition());
+		GameScreen.world.rayCast(GameScreen.rayCastCallback, getPosition(), jugadorCercano.getPosition());
 		if (GameScreen.rayCastCallback.isHit()) {
 			objetivo = jugadorCercano;
 			graphPath.clear();
@@ -143,13 +143,19 @@ public class Enemigo extends Personaje implements Poolable {
 		super.dibujar();
 		Global.shapeRenderer.begin(ShapeType.Filled);
 		Global.shapeRenderer.setColor(Color.GREEN);
-		Global.shapeRenderer.rect((getPosition().x - getBoundingRadius()) * PPM, (getPosition().y + getBoundingRadius()) * PPM + 5, getBoundingRadius() * 2 * PPM * vidaActual / vida , 5);
+		Global.shapeRenderer.rect((getPosition().x - getBoundingRadius()) * PPM,
+				(getPosition().y + getBoundingRadius()) * PPM + 5, getBoundingRadius() * 2 * PPM * vidaActual / vida,
+				5);
 		Global.shapeRenderer.setColor(Color.RED);
-		Global.shapeRenderer.rect((getPosition().x - getBoundingRadius()) * PPM + getBoundingRadius() * 2 * PPM * vidaActual / vida, (getPosition().y + getBoundingRadius()) * PPM + 5, getBoundingRadius() * 2 * PPM * (vida - vidaActual) / vida , 5);
+		Global.shapeRenderer.rect(
+				(getPosition().x - getBoundingRadius()) * PPM + getBoundingRadius() * 2 * PPM * vidaActual / vida,
+				(getPosition().y + getBoundingRadius()) * PPM + 5,
+				getBoundingRadius() * 2 * PPM * (vida - vidaActual) / vida, 5);
 		Global.shapeRenderer.end();
 		// batch.begin();
-		// font.draw(batch, vidaActual + "/" + vida, (getPosition().x - getBoundingRadius() * 3) * PPM,
-		// 		getPosition().y * PPM + 30);
+		// font.draw(batch, vidaActual + "/" + vida, (getPosition().x -
+		// getBoundingRadius() * 3) * PPM,
+		// getPosition().y * PPM + 30);
 		// batch.end();
 		if (Constants.DEBUG) {
 			Global.shapeRenderer.begin(ShapeType.Line);
@@ -157,8 +163,7 @@ public class Enemigo extends Personaje implements Poolable {
 			Global.shapeRenderer.line(getPosition().cpy().scl(PPM),
 					encontrarJugadorMasCercano().getPosition().cpy().scl(PPM));
 			if (graphPath.getCount() > 1) {
-				Global.shapeRenderer.line(getPosition().cpy().scl(PPM),
-						graphPath.get(1).getPosition().cpy().scl(PPM));
+				Global.shapeRenderer.line(getPosition().cpy().scl(PPM), graphPath.get(1).getPosition().cpy().scl(PPM));
 			}
 			Global.shapeRenderer.setColor(Color.WHITE);
 			Global.shapeRenderer.end();

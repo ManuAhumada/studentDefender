@@ -60,11 +60,7 @@ public class Bala implements Poolable {
 		return activo;
 	}
 
-	private Vector2 getPosicion() {
-		return body.getPosition();
-	}
-
-	private float getRadio() {
+	public float getRadio() {
 		return body.getFixtureList().first().getShape().getRadius();
 	}
 
@@ -95,5 +91,13 @@ public class Bala implements Poolable {
 		pBody.createFixture(fd).setUserData(this);
 		shape.dispose();
 		return pBody;
+	}
+
+	public Vector2 getPosition() {
+		return body.getPosition();
+	}
+
+	public float getOrientation() {
+		return body.getAngle();
 	}
 }

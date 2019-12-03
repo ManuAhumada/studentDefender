@@ -1,13 +1,15 @@
 package com.studentdefender.armas;
 
 public class Arma {
-	protected int daño;
-	protected long cadencia;
-	protected boolean automatica;
-	protected int precio;
 	protected int municionTotal;
 	protected int tamañoCartucho;
 	protected int municionEnArma;
+
+	public Arma(int municionTotal, int tamañoCartucho, int municionEnArma) {
+		this.municionEnArma = municionEnArma;
+		this.municionTotal = municionTotal;
+		this.tamañoCartucho = tamañoCartucho;
+	}
 
 	public int getMunicionTotal() {
 		return municionTotal;
@@ -19,13 +21,5 @@ public class Arma {
 
 	public int getMunicionEnArma() {
 		return municionEnArma;
-	}
-
-	public int getDaño() {
-		return daño;
-	}
-
-	public long getCadencia() {
-		return cadencia;
 	}
 }

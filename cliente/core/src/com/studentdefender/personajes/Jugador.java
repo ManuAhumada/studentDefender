@@ -1,5 +1,7 @@
 package com.studentdefender.personajes;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
@@ -9,9 +11,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.studentdefender.armas.Arma;
-import com.studentdefender.juego.GameScreen;
-import com.studentdefender.mejoras.Mejora;
 import com.studentdefender.mejoras.Mejoras;
+import com.studentdefender.objetos_red.JugadorRed;
+import com.studentdefender.objetos_red.MejoraRed;
 import com.studentdefender.utils.Global;
 
 import box2dLight.PointLight;
@@ -20,97 +22,86 @@ public class Jugador extends Personaje {
 	private int dinero;
 	private boolean abatido;
 	private boolean muerto;
-	private Jugador jugadorReviviendo;
-	private int momentoAbatido;
+	private long momentoAbatido;
 	private long tiempoReviviendo;
 	private PointLight pointLight;
-	private Arma arma;
-	private Mejora[] mejoras;
-	private long tiempoRevivir = 3000000000L;
-	private long MAX_TIEMPO_ABATIDO = 30000000000L;
+	private MejoraRed[] mejoras;
+	private long tiempoRevivir;
+	private long maxTiempoAbatido;
 	private Profesores profesor;
+	private Arma arma;
+
+	public Jugador(JugadorRed jugador) {
+		super(jugador.x, jugador.y, jugador.radio, jugador.vida);
+		this.dinero = jugador.dinero;
+		this.abatido = jugador.abatido;
+		this.muerto = jugador.muerto;
+		this.momentoAbatido = jugador.momentoAbatido;
+		this.tiempoReviviendo = jugador.tiempoReviviendo;
+		this.mejoras = jugador.mejoras;
+		this.tiempoRevivir = jugador.tiempoRevivir;
+		this.maxTiempoAbatido = jugador.maxTiempoAbatido;
+		this.profesor = Profesores.values()[jugador.profesor];
+		this.arma = new Arma(jugador.municionTotal, jugador.municionEnArma, jugador.tamañoCartucho);
+	}
 
 	public Jugador(int x, int y, float radio, Profesores profesor) {
-		super(x, y, radio, 100, 300, false);
-		mejoras = new Mejora[Mejoras.values().length];
+		super(x, y, radio, 100);
 		this.profesor = profesor;
 	}
 
-	public void actualizar(float delta) {
-		rotar();
-		mover(delta);
-		if (!abatido) {
-			recargar();
-			atacar();
-			revivir();
-			revisarMejoras();
-		}
-	}
+	public void sendInput() {
+		ArrayList<Integer> keys = new ArrayList<>();
 
-	// TODO
-	private void revisarMejoras() {
+		Vector3 mousePosition3D = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+		Global.camara.unproject(mousePosition3D);
+		keys.add((int) mousePosition3D.x);
+		keys.add((int) mousePosition3D.y);
+		if (Gdx.input.isKeyPressed(Keys.A)) {
+			keys.add(Keys.A);
+		}
+		if (Gdx.input.isKeyPressed(Keys.D)) {
+			keys.add(Keys.D);
+		}
+		if (Gdx.input.isKeyPressed(Keys.W)) {
+			keys.add(Keys.W);
+		}
+		if (Gdx.input.isKeyPressed(Keys.S)) {
+			keys.add(Keys.S);
+		}
+		if (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)) {
+			keys.add(Keys.SHIFT_LEFT);
+		}
+		if (Gdx.input.isKeyJustPressed(Keys.R)) {
+			keys.add(Keys.R);
+		}
+		if (Gdx.input.isKeyPressed(Keys.E)) {
+			keys.add(Keys.E);
+		}
 		for (int i = Keys.NUM_1; i <= Keys.NUM_7; i++) {
 			if (Gdx.input.isKeyJustPressed(i)) {
-
+				keys.add(i);
 			}
 		}
-	}
-
-	// TODO
-	protected void atacar() {
 		if (Gdx.input.isButtonPressed(Buttons.LEFT) || Gdx.input.isButtonJustPressed(Buttons.LEFT)) {
-
+			keys.add(Buttons.LEFT);
 		}
+		Global.servidor.enviarMensaje(keys);
 	}
 
 	// TODO
 	protected void rotar() {
-		Vector3 mousePosition3D = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-		Global.camara.unproject(mousePosition3D);
-		Vector2 mousePosition2D = new Vector2(mousePosition3D.x, mousePosition3D.y);
-	}
 
-	// TODO
-	protected void mover(float delta) {
-		if (Gdx.input.isKeyPressed(Keys.A)) {
-
-		}
-		if (Gdx.input.isKeyPressed(Keys.D)) {
-
-		}
-		if (Gdx.input.isKeyPressed(Keys.W)) {
-
-		}
-		if (Gdx.input.isKeyPressed(Keys.S)) {
-
-		}
-		if (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)) {
-
-		}
-	}
-
-	// TODO
-	protected void recargar() {
-		if (Gdx.input.isKeyJustPressed(Keys.R)) {
-
-		}
 	}
 
 	public void dibujar() {
 		super.dibujar();
-		if (jugadorReviviendo != null) {
+		if (tiempoReviviendo > 0) {
 			Global.shapeRenderer.setColor(Color.WHITE);
 			Global.shapeRenderer.begin(ShapeType.Filled);
-			Global.shapeRenderer.arc(jugadorReviviendo.posicion.x, jugadorReviviendo.posicion.y + 45, 8, 90,
+			Global.shapeRenderer.arc(this.posicion.x, this.posicion.y + 45, 8, 90,
 					((float) TimeUtils.timeSinceNanos(tiempoReviviendo) / tiempoRevivir) * 360);
 			Global.shapeRenderer.end();
-		}
-	}
-
-	// TODO
-	public void revivir() {
-		if (Gdx.input.isKeyPressed(Keys.E)) {
-
 		}
 	}
 
@@ -136,7 +127,7 @@ public class Jugador extends Personaje {
 			Global.font.draw(Global.batch, Integer.toString(mejora.ordinal() + 1),
 					Global.camara.position.x - Global.camara.viewportWidth / 2 + posMejoraX + 2,
 					Global.camara.position.y - Global.camara.viewportHeight / 2 + ancho);
-			Global.font.draw(Global.batch, "$" + mejoras[mejora.ordinal()].getPrecio(),
+			Global.font.draw(Global.batch, "$" + mejoras[mejora.ordinal()].precio,
 					Global.camara.position.x - Global.camara.viewportWidth / 2 + posMejoraX + 2,
 					Global.camara.position.y - Global.camara.viewportHeight / 2 + 12);
 			if (mejora.ordinal() != mejoras.length - 1) {
@@ -144,7 +135,7 @@ public class Jugador extends Personaje {
 						Global.camara.position.x - Global.camara.viewportWidth / 2 + posMejoraX + 8,
 						Global.camara.position.y - Global.camara.viewportHeight / 2 + 10, 24, 24);
 			} else {
-				Global.font.draw(Global.batch, mejoras[mejora.ordinal()].getNombre(),
+				Global.font.draw(Global.batch, mejoras[mejora.ordinal()].nombre,
 						Global.camara.position.x - Global.camara.viewportWidth / 2 + posMejoraX + 2,
 						Global.camara.position.y - Global.camara.viewportHeight / 2 + 30);
 			}

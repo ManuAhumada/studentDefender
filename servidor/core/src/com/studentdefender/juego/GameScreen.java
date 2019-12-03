@@ -2,6 +2,8 @@ package com.studentdefender.juego;
 
 import static com.studentdefender.utils.Constants.PPM;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
@@ -18,6 +20,12 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Pools;
 import com.studentdefender.armas.Bala;
+import com.studentdefender.mejoras.Mejora;
+import com.studentdefender.objetos_red.CuerpoRed;
+import com.studentdefender.objetos_red.JuegoRed;
+import com.studentdefender.objetos_red.JugadorRed;
+import com.studentdefender.objetos_red.MejoraRed;
+import com.studentdefender.objetos_red.PersonajeRed;
 import com.studentdefender.path_finder.IndexedGraphImp;
 import com.studentdefender.path_finder.Node;
 import com.studentdefender.path_finder.RayCastCallbackImp;
@@ -34,7 +42,7 @@ import box2dLight.RayHandler;
 public class GameScreen implements Screen {
 	final StudentDefender game;
 
-	private final float SCALE = Constants.DEBUG ? 1f : 2f;
+	private final float SCALE = Constants.DEBUG ? 1f : 1f;
 
 	private Box2DDebugRenderer b2dr;
 	public static World world;
@@ -165,7 +173,63 @@ public class GameScreen implements Screen {
 			actualizarJugadores(delta);
 			cameraUpdate(delta);
 			// tmr.setView(camara);
+			enviarInformacion();
 		}
+	}
+
+	private void enviarInformacion() {
+		JuegoRed informacion = new JuegoRed();
+		informacion.jugadores = new JugadorRed[jugadores.size];
+		for (int i = 0; i < jugadores.size; i++) {
+			Jugador jugador = jugadores.get(i);
+			informacion.jugadores[i] = new JugadorRed();
+			informacion.jugadores[i].x = jugador.getPosition().x * Constants.PPM;
+			informacion.jugadores[i].y = jugador.getPosition().y * Constants.PPM;
+			informacion.jugadores[i].orientacion = jugador.getOrientation() * MathUtils.radiansToDegrees - 90;
+			informacion.jugadores[i].radio = jugador.getBoundingRadius() * Constants.PPM;
+			informacion.jugadores[i].vida = jugador.getVida();
+			informacion.jugadores[i].profesor = jugador.getProfesor();
+			informacion.jugadores[i].municionTotal = jugador.getArma().getMunicionTotal();
+			informacion.jugadores[i].municionEnArma = jugador.getArma().getMunicionEnArma();
+			informacion.jugadores[i].tamañoCartucho = jugador.getArma().getTamañoCartucho();
+			informacion.jugadores[i].mejoras = new MejoraRed[jugador.getMejoras().length];
+			informacion.jugadores[i].dinero = jugador.getDinero();
+			informacion.jugadores[i].abatido = jugador.isAbatido();
+			informacion.jugadores[i].muerto = jugador.isMuerto();
+			informacion.jugadores[i].momentoAbatido = jugador.getMomentoAbatido();
+			informacion.jugadores[i].tiempoReviviendo = jugador.getTiempoReviviendo();
+			informacion.jugadores[i].tiempoRevivir = jugador.getTiempoRevivir();
+			informacion.jugadores[i].maxTiempoAbatido = jugador.getMaxTiempoAbatido();
+			for (int j = 0; j < jugador.getMejoras().length; j++) {
+				informacion.jugadores[i].mejoras[j] = new MejoraRed();
+				Mejora mejora = jugador.getMejoras()[j];
+				informacion.jugadores[i].mejoras[j].nombre = mejora.getNombre();
+				informacion.jugadores[i].mejoras[j].nivelMaximo = mejora.getNivelMaximo();
+				informacion.jugadores[i].mejoras[j].nivelActual = mejora.getNivelActual();
+				informacion.jugadores[i].mejoras[j].precio = mejora.getPrecio();
+			}
+		}
+		informacion.balas = new CuerpoRed[balasActivas.size];
+		for (int i = 0; i < balasActivas.size; i++) {
+			Bala bala = balasActivas.get(i);
+			informacion.balas[i] = new CuerpoRed();
+			informacion.balas[i].x = bala.getPosition().x * Constants.PPM;
+			informacion.balas[i].y = bala.getPosition().y * Constants.PPM;
+			informacion.balas[i].orientacion = bala.getOrientation() * MathUtils.radiansToDegrees - 90;
+			informacion.balas[i].radio = bala.getRadio() * Constants.PPM;
+		}
+		informacion.enemigos = new PersonajeRed[enemigosActivos.size];
+		for (int i = 0; i < enemigosActivos.size; i++) {
+			Enemigo enemigo = enemigosActivos.get(i);
+			informacion.enemigos[i] = new PersonajeRed();
+			informacion.enemigos[i].x = enemigo.getPosition().x * Constants.PPM;
+			informacion.enemigos[i].y = enemigo.getPosition().y * Constants.PPM;
+			informacion.enemigos[i].orientacion = enemigo.getOrientation() * MathUtils.radiansToDegrees - 90;
+			informacion.enemigos[i].vida = enemigo.getVida();
+			informacion.enemigos[i].radio = enemigo.getBoundingRadius() * Constants.PPM;
+		}
+		informacion.ronda = ronda;
+		Global.servidor.enviarMensaje(informacion);
 	}
 
 	private boolean cheaquearFin() {
@@ -177,9 +241,12 @@ public class GameScreen implements Screen {
 	}
 
 	private void actualizarJugadores(float delta) {
-		for (Jugador jugador : jugadores) {
+		for (int i = 0; i < jugadores.size; i++) {
+			Jugador jugador = jugadores.get(i);
 			if (!jugador.isMuerto()) {
-				jugador.actualizar(delta);
+				if (Global.mensajesJugadores[i] != null && Global.mensajesJugadores[i] instanceof ArrayList<?>) {
+					jugador.actualizar(delta, (ArrayList<Integer>) Global.mensajesJugadores[i]);
+				}
 			} else {
 				jugador.getBody().setActive(false);
 			}

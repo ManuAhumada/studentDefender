@@ -43,4 +43,12 @@ public abstract class Mejora {
     public Texture getIcono() {
         return icono;
     }
+
+    public int getNivelMaximo() {
+        return nivelMaximo;
+    }
+
+    public int getNivelActual() {
+        return nivelActual;
+    }
 }

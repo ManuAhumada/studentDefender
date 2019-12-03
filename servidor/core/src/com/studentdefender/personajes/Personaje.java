@@ -50,18 +50,18 @@ public abstract class Personaje implements Steerable<Vector2> {
 		FixtureDef fd = new FixtureDef();
 		fd.filter.categoryBits = isEnemy ? Constants.BIT_ENEMIGO : Constants.BIT_JUGADOR;
 		if (isEnemy) {
-			fd.filter.maskBits = Constants.BIT_BALA | Constants.BIT_PARED | Constants.BIT_JUGADOR | Constants.BIT_ENEMIGO;
+			fd.filter.maskBits = Constants.BIT_BALA | Constants.BIT_PARED | Constants.BIT_JUGADOR
+					| Constants.BIT_ENEMIGO;
 		} else {
-			fd.filter.maskBits = Constants.BIT_BALA | Constants.BIT_PARED | Constants.BIT_ENEMIGO | Constants.BIT_PUERTA_ENEMIGO | Constants.BIT_JUGADOR;
+			fd.filter.maskBits = Constants.BIT_BALA | Constants.BIT_PARED | Constants.BIT_ENEMIGO
+					| Constants.BIT_PUERTA_ENEMIGO | Constants.BIT_JUGADOR;
 		}
-		
+
 		fd.shape = shape;
 		pBody.createFixture(fd).setUserData(this);
 		shape.dispose();
 		return pBody;
 	}
-
-	public abstract void actualizar(float delta);
 
 	public void dibujar() {
 		Global.batch.begin();
@@ -195,5 +195,9 @@ public abstract class Personaje implements Steerable<Vector2> {
 	@Override
 	public void setTagged(boolean tagged) {
 		isTagged = tagged;
+	}
+
+	public int getVida() {
+		return vida;
 	}
 }

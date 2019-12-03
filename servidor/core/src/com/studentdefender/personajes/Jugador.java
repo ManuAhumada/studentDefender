@@ -2,6 +2,8 @@ package com.studentdefender.personajes;
 
 import static com.studentdefender.utils.Constants.PPM;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
@@ -31,7 +33,7 @@ public class Jugador extends Personaje {
 	protected Arma arma;
 	protected Mejora[] mejoras;
 	protected long tiempoRevivir = 3000000000L;
-	public static final long MAX_TIEMPO_ABATIDO = 30000000000L;
+	public long maxTiempoAbatido = 30000000000L;
 	protected Profesores profesor;
 
 	public Jugador(int x, int y, float radio, Profesores profesor) {
@@ -42,7 +44,8 @@ public class Jugador extends Personaje {
 		pointLight.setSoft(false);
 		pointLight.attachToBody(body);
 		pointLight.setIgnoreAttachedBody(false);
-		pointLight.setContactFilter(Constants.BIT_LUZ, (short) 0, (short) (Constants.BIT_PARED | Constants.BIT_PUERTA_ENEMIGO));
+		pointLight.setContactFilter(Constants.BIT_LUZ, (short) 0,
+				(short) (Constants.BIT_PARED | Constants.BIT_PUERTA_ENEMIGO));
 		reiniciar();
 		mejoras = new Mejora[Mejoras.values().length];
 		for (int i = 0; i < Mejoras.values().length; i++) {
@@ -66,66 +69,64 @@ public class Jugador extends Personaje {
 		pointLight.setActive(true);
 	}
 
-	public void actualizar(float delta) {
-		rotar();
-		mover(delta);
+	public void actualizar(float delta, ArrayList<Integer> inputs) {
+		rotar(inputs);
+		mover(delta, inputs);
 		if (!isAbatido()) {
-			recargar();
-			atacar();
-			revivir();
-			revisarMejoras();
+			recargar(inputs);
+			atacar(inputs);
+			revivir(inputs);
+			revisarMejoras(inputs);
 		} else {
 			revisarAbatimiento();
 		}
 	}
 
-	private void revisarMejoras() {
+	private void revisarMejoras(ArrayList<Integer> inputs) {
 		for (int i = Keys.NUM_1; i <= Keys.NUM_7; i++) {
-			if (Gdx.input.isKeyJustPressed(i)) {
+			if (inputs.contains(i)) {
 				mejoras[i - Keys.NUM_1].seleccionarMejora();
-			}	
+			}
 		}
 	}
 
 	private void revisarAbatimiento() {
-		if (TimeUtils.timeSinceNanos(momentoAbatido) > MAX_TIEMPO_ABATIDO) {
+		if (TimeUtils.timeSinceNanos(momentoAbatido) > maxTiempoAbatido) {
 			morir();
 		}
 	}
 
-	protected void atacar() {
-		if ((arma.isAutomatica() && Gdx.input.isButtonPressed(Buttons.LEFT))
-				|| (!arma.isAutomatica() && Gdx.input.isButtonJustPressed(Buttons.LEFT))) {
+	protected void atacar(ArrayList<Integer> inputs) {
+		if ((arma.isAutomatica() && inputs.contains(Buttons.LEFT))
+				|| (!arma.isAutomatica() && inputs.contains(Buttons.LEFT))) {
 			arma.atacar(getPosition(), body.getAngle(), this);
 		}
 	}
 
-	protected void rotar() {
-		Vector3 mousePosition3D = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-		Global.camara.unproject(mousePosition3D);
-		Vector2 mousePosition2D = new Vector2(mousePosition3D.x, mousePosition3D.y);
+	protected void rotar(ArrayList<Integer> inputs) {
+		Vector2 mousePosition2D = new Vector2(inputs.get(0), inputs.get(1));
 		Vector2 toTarget = mousePosition2D.sub(body.getPosition().scl(PPM)).nor();
 		float angulo = vectorToAngle(toTarget);
 		body.setTransform(getPosition(), angulo);
 	}
 
-	protected void mover(float delta) {
+	protected void mover(float delta, ArrayList<Integer> inputs) {
 		Vector2 movement = new Vector2(0, 0);
 
-		if (Gdx.input.isKeyPressed(Keys.A)) {
+		if (inputs.contains(Keys.A)) {
 			movement.x--;
 		}
-		if (Gdx.input.isKeyPressed(Keys.D)) {
+		if (inputs.contains(Keys.D)) {
 			movement.x++;
 		}
-		if (Gdx.input.isKeyPressed(Keys.W)) {
+		if (inputs.contains(Keys.W)) {
 			movement.y++;
 		}
-		if (Gdx.input.isKeyPressed(Keys.S)) {
+		if (inputs.contains(Keys.S)) {
 			movement.y--;
 		}
 		if (!isAbatido()) {
-			if (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)) {
+			if (inputs.contains(Keys.SHIFT_LEFT)) {
 				movement.scl(1.5f);
 			}
 		} else {
@@ -140,8 +141,8 @@ public class Jugador extends Personaje {
 		this.dinero += dinero * multiplicadorDinero;
 	}
 
-	protected void recargar() {
-		if (Gdx.input.isKeyJustPressed(Keys.R)) {
+	protected void recargar(ArrayList<Integer> inputs) {
+		if (inputs.contains(Keys.R)) {
 			arma.recargar();
 		}
 	}
@@ -175,8 +176,8 @@ public class Jugador extends Personaje {
 		}
 	}
 
-	public void revivir() {
-		if (Gdx.input.isKeyPressed(Keys.E)) {
+	public void revivir(ArrayList<Integer> inputs) {
+		if (inputs.contains(Keys.E)) {
 			if (jugadorReviviendo != null) {
 				if (getPosition().dst(jugadorReviviendo
 						.getPosition()) < (getBoundingRadius() + jugadorReviviendo.getBoundingRadius()) * 2.5) {
@@ -225,42 +226,64 @@ public class Jugador extends Personaje {
 		int radioImagen = 30;
 		Global.shapeRenderer.begin(ShapeType.Line);
 		Global.shapeRenderer.setColor(Color.WHITE);
-		Global.shapeRenderer.circle(Global.camara.position.x - Global.camara.viewportWidth/2 + radioImagen + 10 + posCuadrox, Global.camara.position.y + Global.camara.viewportHeight/2 - radioImagen - 10, radioImagen);
+		Global.shapeRenderer.circle(
+				Global.camara.position.x - Global.camara.viewportWidth / 2 + radioImagen + 10 + posCuadrox,
+				Global.camara.position.y + Global.camara.viewportHeight / 2 - radioImagen - 10, radioImagen);
 		int posMejoraX = 300, ancho = 40;
-		for(Mejoras mejora : Mejoras.values()) {
-			Global.shapeRenderer.box(Global.camara.position.x - Global.camara.viewportWidth/2 + posMejoraX, Global.camara.position.y - Global.camara.viewportHeight/2, 0, ancho, ancho, 0);
+		for (Mejoras mejora : Mejoras.values()) {
+			Global.shapeRenderer.box(Global.camara.position.x - Global.camara.viewportWidth / 2 + posMejoraX,
+					Global.camara.position.y - Global.camara.viewportHeight / 2, 0, ancho, ancho, 0);
 			posMejoraX += ancho;
-		}	
+		}
 		Global.shapeRenderer.end();
 
 		Global.batch.begin();
 		posMejoraX = 300;
-		
-		for(Mejoras mejora : Mejoras.values()) {
-			Global.font.draw(Global.batch, Integer.toString(mejora.ordinal() + 1) , Global.camara.position.x - Global.camara.viewportWidth/2 + posMejoraX + 2, Global.camara.position.y - Global.camara.viewportHeight/2 + ancho);	
-			Global.font.draw(Global.batch, "$" + mejoras[mejora.ordinal()].getPrecio(), Global.camara.position.x - Global.camara.viewportWidth/2 + posMejoraX + 2, Global.camara.position.y - Global.camara.viewportHeight/2 + 12);
-			if(mejora.ordinal() != mejoras.length-1) {
-				Global.batch.draw(mejora.getMejora().getIcono(), Global.camara.position.x - Global.camara.viewportWidth/2 + posMejoraX + 8, Global.camara.position.y - Global.camara.viewportHeight/2 + 10, 24, 24);	
+
+		for (Mejoras mejora : Mejoras.values()) {
+			Global.font.draw(Global.batch, Integer.toString(mejora.ordinal() + 1),
+					Global.camara.position.x - Global.camara.viewportWidth / 2 + posMejoraX + 2,
+					Global.camara.position.y - Global.camara.viewportHeight / 2 + ancho);
+			Global.font.draw(Global.batch, "$" + mejoras[mejora.ordinal()].getPrecio(),
+					Global.camara.position.x - Global.camara.viewportWidth / 2 + posMejoraX + 2,
+					Global.camara.position.y - Global.camara.viewportHeight / 2 + 12);
+			if (mejora.ordinal() != mejoras.length - 1) {
+				Global.batch.draw(mejora.getMejora().getIcono(),
+						Global.camara.position.x - Global.camara.viewportWidth / 2 + posMejoraX + 8,
+						Global.camara.position.y - Global.camara.viewportHeight / 2 + 10, 24, 24);
 			} else {
-				Global.font.draw(Global.batch, mejoras[mejora.ordinal()].getNombre(), Global.camara.position.x - Global.camara.viewportWidth/2 + posMejoraX + 2, Global.camara.position.y - Global.camara.viewportHeight/2 + 30);
+				Global.font.draw(Global.batch, mejoras[mejora.ordinal()].getNombre(),
+						Global.camara.position.x - Global.camara.viewportWidth / 2 + posMejoraX + 2,
+						Global.camara.position.y - Global.camara.viewportHeight / 2 + 30);
 			}
 			posMejoraX += ancho;
 		}
-		Global.batch.draw(profesor.getImagen(), Global.camara.position.x - Global.camara.viewportWidth/2 + radioImagen + 10 + posCuadrox - radioImagen + 5, Global.camara.position.y + Global.camara.viewportHeight/2 - radioImagen - 10 - radioImagen + 10, (float) (radioImagen*1.5),(float) (radioImagen*1.5));
-		Global.font.draw(Global.batch, profesor.getNombre(), Global.camara.position.x - Global.camara.viewportWidth/2 + radioImagen + 10 + posCuadrox - radioImagen + 5, Global.camara.position.y + Global.camara.viewportHeight/2 - 70);
-		Global.font.draw(Global.batch, "Vida: " + vidaActual + " / " + vida, Global.camara.position.x - Global.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, Global.camara.position.y + Global.camara.viewportHeight/2 - 10);
-		Global.font.draw(Global.batch, "Arma: " + arma.getMunicionEnArma() + " / " + arma.getTamañoCartucho(), Global.camara.position.x - Global.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, Global.camara.position.y + Global.camara.viewportHeight/2 - 30);
-		Global.font.draw(Global.batch, "Municion: " + arma.getMunicionTotal(), Global.camara.position.x - Global.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, Global.camara.position.y + Global.camara.viewportHeight/2 - 50);
-		Global.font.draw(Global.batch, "Plata: $" + this.dinero, Global.camara.position.x - Global.camara.viewportWidth/2 + radioImagen * 2 + 10 + posCuadrox + 20, Global.camara.position.y + Global.camara.viewportHeight/2 - 70);
+		Global.batch.draw(profesor.getImagen(),
+				Global.camara.position.x - Global.camara.viewportWidth / 2 + radioImagen + 10 + posCuadrox - radioImagen
+						+ 5,
+				Global.camara.position.y + Global.camara.viewportHeight / 2 - radioImagen - 10 - radioImagen + 10,
+				(float) (radioImagen * 1.5), (float) (radioImagen * 1.5));
+		Global.font.draw(
+				Global.batch, profesor.getNombre(), Global.camara.position.x - Global.camara.viewportWidth / 2
+						+ radioImagen + 10 + posCuadrox - radioImagen + 5,
+				Global.camara.position.y + Global.camara.viewportHeight / 2 - 70);
+		Global.font.draw(Global.batch, "Vida: " + vidaActual + " / " + vida,
+				Global.camara.position.x - Global.camara.viewportWidth / 2 + radioImagen * 2 + 10 + posCuadrox + 20,
+				Global.camara.position.y + Global.camara.viewportHeight / 2 - 10);
+		Global.font.draw(Global.batch, "Arma: " + arma.getMunicionEnArma() + " / " + arma.getTamañoCartucho(),
+				Global.camara.position.x - Global.camara.viewportWidth / 2 + radioImagen * 2 + 10 + posCuadrox + 20,
+				Global.camara.position.y + Global.camara.viewportHeight / 2 - 30);
+		Global.font.draw(Global.batch, "Municion: " + arma.getMunicionTotal(),
+				Global.camara.position.x - Global.camara.viewportWidth / 2 + radioImagen * 2 + 10 + posCuadrox + 20,
+				Global.camara.position.y + Global.camara.viewportHeight / 2 - 50);
+		Global.font.draw(Global.batch, "Plata: $" + this.dinero,
+				Global.camara.position.x - Global.camara.viewportWidth / 2 + radioImagen * 2 + 10 + posCuadrox + 20,
+				Global.camara.position.y + Global.camara.viewportHeight / 2 - 70);
 		Global.batch.end();
 	}
 
 	public void setVida(int vida) {
 		this.vida = vida;
-	}
-
-	public int getVida() {
-		return this.vida;
 	}
 
 	public Arma getArma() {
@@ -281,5 +304,29 @@ public class Jugador extends Personaje {
 
 	public void setMultiplicadorDinero(float multiplicadorDinero) {
 		this.multiplicadorDinero = multiplicadorDinero;
+	}
+
+	public Mejora[] getMejoras() {
+		return mejoras;
+	}
+
+	public int getProfesor() {
+		return profesor.ordinal();
+	}
+
+	public int getDinero() {
+		return dinero;
+	}
+
+	public long getMomentoAbatido() {
+		return momentoAbatido;
+	}
+
+	public long getTiempoReviviendo() {
+		return tiempoReviviendo;
+	}
+
+	public long getMaxTiempoAbatido() {
+		return maxTiempoAbatido;
 	}
 }

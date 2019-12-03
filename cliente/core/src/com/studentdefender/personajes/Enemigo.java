@@ -2,17 +2,13 @@ package com.studentdefender.personajes;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.studentdefender.objetos_red.PersonajeRed;
 import com.studentdefender.utils.Global;
 
 public class Enemigo extends Personaje {
 
-	public Enemigo() {
-		super(0, 0, 0, 100, 300, true);
-	}
-
-	// TODO
-	public void actualizar(float delta) {
-
+	public Enemigo(PersonajeRed personajeRed) {
+		super(personajeRed.x, personajeRed.y, personajeRed.radio, personajeRed.vida);
 	}
 
 	public void dibujar() {

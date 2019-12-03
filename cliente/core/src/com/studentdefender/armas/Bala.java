@@ -1,12 +1,15 @@
 package com.studentdefender.armas;
 
-import com.badlogic.gdx.math.Vector2;;
+import com.badlogic.gdx.math.Vector2;
+import com.studentdefender.objetos_red.CuerpoRed;;
 
 public class Bala {
 
 	private Vector2 posicion;
 	private float radio;
 
-	public Bala() {
+	public Bala(CuerpoRed bala) {
+		this.posicion = new Vector2(bala.x, bala.y);
+		this.radio = bala.radio;
 	}
 }
