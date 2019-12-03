@@ -14,7 +14,6 @@ import com.badlogic.gdx.utils.Array;
 import com.studentdefender.armas.Bala;
 import com.studentdefender.personajes.Enemigo;
 import com.studentdefender.personajes.Jugador;
-import com.studentdefender.personajes.Profesores;
 import com.studentdefender.utils.Global;
 
 public class GameScreen implements Screen {
@@ -36,7 +35,7 @@ public class GameScreen implements Screen {
 	private int ronda;
 	private boolean fin;
 
-	public GameScreen(final StudentDefender game, Profesores profesorSeleccionado) {
+	public GameScreen(final StudentDefender game) {
 		this.game = game;
 
 		Global.camara.setToOrtho(false, Gdx.graphics.getWidth() / SCALE, Gdx.graphics.getHeight() / SCALE);

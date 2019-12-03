@@ -19,6 +19,7 @@ public class PantallaSeleccion implements Screen {
 
     public PantallaSeleccion(final StudentDefender game) {
         this.game = game;
+        jugadores = new ArrayList<>();
 
         Global.camara.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
@@ -44,6 +45,11 @@ public class PantallaSeleccion implements Screen {
             if (Global.mensaje != null && mensaje.mensaje instanceof ArrayList<?>) {
                 jugadores = (ArrayList<SeleccionJugador>) mensaje.mensaje;
                 Global.mensaje.clear();
+            }
+            if (Global.mensaje != null && mensaje.mensaje instanceof String
+                    && ((String) mensaje.mensaje).equals("comenzar")) {
+                game.setScreen(new GameScreen(game));
+                dispose();
             }
         }
     }

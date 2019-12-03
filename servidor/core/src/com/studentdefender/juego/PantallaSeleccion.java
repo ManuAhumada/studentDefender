@@ -36,7 +36,26 @@ public class PantallaSeleccion implements Screen {
         checkNewPlayers();
         checkInputs();
         sendData();
+        checkStart();
 
+    }
+
+    private void checkStart() {
+
+        boolean allReady = true;
+        for (SeleccionJugador jugador : jugadores) {
+            if (!jugador.preparado)
+                allReady = false;
+        }
+        if (allReady) {
+            Profesores[] profesoresSeleccionados = new Profesores[jugadores.size()];
+            for (int i = 0; i < jugadores.size(); i++) {
+                profesoresSeleccionados[i] = Profesores.values()[jugadores.get(i).personajeSeleccionado];
+            }
+            Global.servidor.enviarMensaje("comenzar");
+            game.setScreen(new GameScreen(game, profesoresSeleccionados));
+            dispose();
+        }
     }
 
     private void sendData() {
@@ -53,7 +72,8 @@ public class PantallaSeleccion implements Screen {
 
     private void checkInputs() {
         for (int i = 0; i < jugadores.size(); i++) {
-            if (Global.mensajesJugadores[i] != null && Global.mensajesJugadores[i] instanceof ArrayList<?>) {
+            if (!jugadores.get(i).preparado && Global.mensajesJugadores[i] != null
+                    && Global.mensajesJugadores[i] instanceof ArrayList<?>) {
 
                 ArrayList<Integer> inputs = (ArrayList<Integer>) Global.mensajesJugadores[i];
                 SeleccionJugador jugador = jugadores.get(i);
@@ -101,9 +121,6 @@ public class PantallaSeleccion implements Screen {
         }
         Global.shapeRenderer.begin(ShapeType.Line);
         Global.shapeRenderer.setColor(Color.BLUE);
-        // Global.shapeRenderer.box(posInicialX + ancho * personajeSeleccionado + margen
-        // * personajeSeleccionado, 500, 0,
-        // ancho, ancho, 0);
         Global.shapeRenderer.end();
     }
 
