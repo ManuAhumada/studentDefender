@@ -64,7 +64,9 @@ public class GameScreen implements Screen {
 	public static Pool<Bala> balaPool;
 	public static Pool<Enemigo> enemigoPool;
 
-	private int cantEnemigos;
+	private int cantEnemigosRonda;
+	private int cantEnemigosRestantes;
+	private int cantEnemigosMaximo;
 	private int ronda;
 
 	public GameScreen(final StudentDefender game, Profesores[] profesoresSeleccionados) {
@@ -92,7 +94,10 @@ public class GameScreen implements Screen {
 		enemigosActivos = new Array<Enemigo>();
 		enemigoPool = Pools.get(Enemigo.class);
 
-		cantEnemigos = 3;
+		cantEnemigosRonda = 3;
+		cantEnemigosRestantes = 3;
+		cantEnemigosMaximo = 15;
+
 		ronda = 0;
 	}
 
@@ -128,6 +133,8 @@ public class GameScreen implements Screen {
 			rayHandler.render();
 			dibujarInterfaz();
 		} else {
+			Gdx.app.exit();
+			Global.servidor.enviarMensaje("fin");
 			dispose();
 			game.setScreen(new PantallaSeleccion(game));
 		}
@@ -141,7 +148,7 @@ public class GameScreen implements Screen {
 			posCuadrox += 200;
 		}
 		Global.batch.begin();
-		Global.font.draw(Global.batch, "Round " + ronda,
+		Global.font.draw(Global.batch, "Round " + (ronda + 1),
 				Global.camara.position.x - Global.camara.viewportWidth / 2 + 10,
 				Global.camara.position.y - Global.camara.viewportHeight / 2 + 20);
 		Global.batch.end();
@@ -188,11 +195,11 @@ public class GameScreen implements Screen {
 			informacion.jugadores[i].orientacion = jugador.getOrientation() * MathUtils.radiansToDegrees - 90;
 			informacion.jugadores[i].radio = jugador.getBoundingRadius() * Constants.PPM;
 			informacion.jugadores[i].vida = jugador.getVida();
+			informacion.jugadores[i].vidaActual = jugador.getVidaActual();
 			informacion.jugadores[i].profesor = jugador.getProfesor();
 			informacion.jugadores[i].municionTotal = jugador.getArma().getMunicionTotal();
 			informacion.jugadores[i].municionEnArma = jugador.getArma().getMunicionEnArma();
 			informacion.jugadores[i].tamañoCartucho = jugador.getArma().getTamañoCartucho();
-			informacion.jugadores[i].mejoras = new MejoraRed[jugador.getMejoras().length];
 			informacion.jugadores[i].dinero = jugador.getDinero();
 			informacion.jugadores[i].abatido = jugador.isAbatido();
 			informacion.jugadores[i].muerto = jugador.isMuerto();
@@ -200,6 +207,8 @@ public class GameScreen implements Screen {
 			informacion.jugadores[i].tiempoReviviendo = jugador.getTiempoReviviendo();
 			informacion.jugadores[i].tiempoRevivir = jugador.getTiempoRevivir();
 			informacion.jugadores[i].maxTiempoAbatido = jugador.getMaxTiempoAbatido();
+			informacion.jugadores[i].reviviendo = jugador.getJugadorReviviendo() != null;
+			informacion.jugadores[i].mejoras = new MejoraRed[jugador.getMejoras().length];
 			for (int j = 0; j < jugador.getMejoras().length; j++) {
 				informacion.jugadores[i].mejoras[j] = new MejoraRed();
 				Mejora mejora = jugador.getMejoras()[j];
@@ -226,6 +235,7 @@ public class GameScreen implements Screen {
 			informacion.enemigos[i].y = enemigo.getPosition().y * Constants.PPM;
 			informacion.enemigos[i].orientacion = enemigo.getOrientation() * MathUtils.radiansToDegrees - 90;
 			informacion.enemigos[i].vida = enemigo.getVida();
+			informacion.enemigos[i].vidaActual = enemigo.getVidaActual();
 			informacion.enemigos[i].radio = enemigo.getBoundingRadius() * Constants.PPM;
 		}
 		informacion.ronda = ronda;
@@ -264,14 +274,16 @@ public class GameScreen implements Screen {
 	}
 
 	private void spawnearEnemigos() {
-		if (enemigosActivos.isEmpty()) {
+		if (enemigosActivos.size < cantEnemigosMaximo && cantEnemigosRestantes > 0) {
+			Vector2 posicion = spawnsEnemigos.get(MathUtils.random(spawnsEnemigos.size - 1)).getPosition();
+			enemigoPool.obtain().init((int) (posicion.x * PPM), (int) (posicion.y * PPM), 20f, 100 + ronda * 10);
+			cantEnemigosRestantes--;
+		}
+		if (enemigosActivos.isEmpty() && cantEnemigosRestantes == 0) {
 			spawnearJugadores();
 			Gdx.app.log("Sistema", "Round " + ++ronda);
-			for (int i = 0; i < cantEnemigos; i++) {
-				Vector2 posicion = spawnsEnemigos.get(MathUtils.random(spawnsEnemigos.size - 1)).getPosition();
-				enemigoPool.obtain().init((int) (posicion.x * PPM), (int) (posicion.y * PPM), 20f);
-			}
-			cantEnemigos *= 1.5;
+			cantEnemigosRonda *= 1.5;
+			cantEnemigosRestantes = cantEnemigosRonda;
 		}
 	}
 

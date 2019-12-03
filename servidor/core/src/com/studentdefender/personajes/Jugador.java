@@ -4,13 +4,11 @@ import static com.studentdefender.utils.Constants.PPM;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.studentdefender.armas.Arma;
 import com.studentdefender.juego.GameScreen;
@@ -35,6 +33,8 @@ public class Jugador extends Personaje {
 	protected long tiempoRevivir = 3000000000L;
 	public long maxTiempoAbatido = 30000000000L;
 	protected Profesores profesor;
+	private long tiempoRegeneraVida = 5000000000L;
+	private long ultimoRegenero;
 
 	public Jugador(int x, int y, float radio, Profesores profesor) {
 		super(x, y, radio, 100, 300, false);
@@ -54,6 +54,7 @@ public class Jugador extends Personaje {
 		}
 		multiplicadorDinero = 1;
 		this.profesor = profesor;
+		ultimoRegenero = TimeUtils.nanoTime();
 	}
 
 	public void reiniciar() {
@@ -77,13 +78,21 @@ public class Jugador extends Personaje {
 			atacar(inputs);
 			revivir(inputs);
 			revisarMejoras(inputs);
+			regenerarVida();
 		} else {
 			revisarAbatimiento();
 		}
 	}
 
+	private void regenerarVida() {
+		if (TimeUtils.timeSinceNanos(ultimoRegenero) > tiempoRegeneraVida) {
+			agregarVida(5);
+			ultimoRegenero = TimeUtils.nanoTime();
+		}
+	}
+
 	private void revisarMejoras(ArrayList<Integer> inputs) {
-		for (int i = Keys.NUM_1; i <= Keys.NUM_7; i++) {
+		for (int i = Keys.NUM_1; i <= Keys.NUM_6; i++) {
 			if (inputs.contains(i)) {
 				mejoras[i - Keys.NUM_1].seleccionarMejora();
 			}
@@ -104,10 +113,12 @@ public class Jugador extends Personaje {
 	}
 
 	protected void rotar(ArrayList<Integer> inputs) {
-		Vector2 mousePosition2D = new Vector2(inputs.get(0), inputs.get(1));
-		Vector2 toTarget = mousePosition2D.sub(body.getPosition().scl(PPM)).nor();
-		float angulo = vectorToAngle(toTarget);
-		body.setTransform(getPosition(), angulo);
+		if (inputs.size() >= 2) {
+			Vector2 mousePosition2D = new Vector2(inputs.get(0), inputs.get(1));
+			Vector2 toTarget = mousePosition2D.sub(body.getPosition().scl(PPM)).nor();
+			float angulo = vectorToAngle(toTarget);
+			body.setTransform(getPosition(), angulo);
+		}
 	}
 
 	protected void mover(float delta, ArrayList<Integer> inputs) {
@@ -328,5 +339,9 @@ public class Jugador extends Personaje {
 
 	public long getMaxTiempoAbatido() {
 		return maxTiempoAbatido;
+	}
+
+	public Jugador getJugadorReviviendo() {
+		return jugadorReviviendo;
 	}
 }

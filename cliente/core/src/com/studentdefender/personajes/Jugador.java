@@ -7,10 +7,11 @@ import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.studentdefender.armas.Arma;
+import com.studentdefender.juego.GameScreen;
 import com.studentdefender.mejoras.Mejoras;
 import com.studentdefender.objetos_red.JugadorRed;
 import com.studentdefender.objetos_red.MejoraRed;
@@ -30,9 +31,13 @@ public class Jugador extends Personaje {
 	private long maxTiempoAbatido;
 	private Profesores profesor;
 	private Arma arma;
+	private boolean reviviendo;
 
 	public Jugador(JugadorRed jugador) {
-		super(jugador.x, jugador.y, jugador.radio, jugador.vida);
+		super(jugador.x, jugador.y, jugador.radio, jugador.vida, jugador.vidaActual, jugador.orientacion);
+		pointLight = new PointLight(GameScreen.rayHandler, 100, new Color(1f, 1f, 1f, .75f), 600, jugador.x, jugador.y);
+		pointLight.setSoft(false);
+		pointLight.setIgnoreAttachedBody(false);
 		this.dinero = jugador.dinero;
 		this.abatido = jugador.abatido;
 		this.muerto = jugador.muerto;
@@ -42,12 +47,8 @@ public class Jugador extends Personaje {
 		this.tiempoRevivir = jugador.tiempoRevivir;
 		this.maxTiempoAbatido = jugador.maxTiempoAbatido;
 		this.profesor = Profesores.values()[jugador.profesor];
-		this.arma = new Arma(jugador.municionTotal, jugador.municionEnArma, jugador.tamañoCartucho);
-	}
-
-	public Jugador(int x, int y, float radio, Profesores profesor) {
-		super(x, y, radio, 100);
-		this.profesor = profesor;
+		this.arma = new Arma(jugador.municionTotal, jugador.tamañoCartucho, jugador.municionEnArma);
+		this.reviviendo = jugador.reviviendo;
 	}
 
 	public void sendInput() {
@@ -78,7 +79,7 @@ public class Jugador extends Personaje {
 		if (Gdx.input.isKeyPressed(Keys.E)) {
 			keys.add(Keys.E);
 		}
-		for (int i = Keys.NUM_1; i <= Keys.NUM_7; i++) {
+		for (int i = Keys.NUM_1; i <= Keys.NUM_6; i++) {
 			if (Gdx.input.isKeyJustPressed(i)) {
 				keys.add(i);
 			}
@@ -89,14 +90,14 @@ public class Jugador extends Personaje {
 		Global.servidor.enviarMensaje(keys);
 	}
 
-	// TODO
-	protected void rotar() {
-
-	}
-
 	public void dibujar() {
 		super.dibujar();
-		if (tiempoReviviendo > 0) {
+		Global.batch.begin();
+		profesor.getPersonaje().setRotation(orientacion);
+		profesor.getPersonaje().setPosition(posicion.x - radio, posicion.y - radio);
+		profesor.getPersonaje().draw(Global.batch);
+		Global.batch.end();
+		if (reviviendo) {
 			Global.shapeRenderer.setColor(Color.WHITE);
 			Global.shapeRenderer.begin(ShapeType.Filled);
 			Global.shapeRenderer.arc(this.posicion.x, this.posicion.y + 45, 8, 90,
@@ -107,40 +108,7 @@ public class Jugador extends Personaje {
 
 	public void dibujarInterfaz(int posCuadrox) {
 		int radioImagen = 30;
-		Global.shapeRenderer.begin(ShapeType.Line);
-		Global.shapeRenderer.setColor(Color.WHITE);
-		Global.shapeRenderer.circle(
-				Global.camara.position.x - Global.camara.viewportWidth / 2 + radioImagen + 10 + posCuadrox,
-				Global.camara.position.y + Global.camara.viewportHeight / 2 - radioImagen - 10, radioImagen);
-		int posMejoraX = 300, ancho = 40;
-		for (Mejoras mejora : Mejoras.values()) {
-			Global.shapeRenderer.box(Global.camara.position.x - Global.camara.viewportWidth / 2 + posMejoraX,
-					Global.camara.position.y - Global.camara.viewportHeight / 2, 0, ancho, ancho, 0);
-			posMejoraX += ancho;
-		}
-		Global.shapeRenderer.end();
-
 		Global.batch.begin();
-		posMejoraX = 300;
-
-		for (Mejoras mejora : Mejoras.values()) {
-			Global.font.draw(Global.batch, Integer.toString(mejora.ordinal() + 1),
-					Global.camara.position.x - Global.camara.viewportWidth / 2 + posMejoraX + 2,
-					Global.camara.position.y - Global.camara.viewportHeight / 2 + ancho);
-			Global.font.draw(Global.batch, "$" + mejoras[mejora.ordinal()].precio,
-					Global.camara.position.x - Global.camara.viewportWidth / 2 + posMejoraX + 2,
-					Global.camara.position.y - Global.camara.viewportHeight / 2 + 12);
-			if (mejora.ordinal() != mejoras.length - 1) {
-				Global.batch.draw(mejora.getMejora().getIcono(),
-						Global.camara.position.x - Global.camara.viewportWidth / 2 + posMejoraX + 8,
-						Global.camara.position.y - Global.camara.viewportHeight / 2 + 10, 24, 24);
-			} else {
-				Global.font.draw(Global.batch, mejoras[mejora.ordinal()].nombre,
-						Global.camara.position.x - Global.camara.viewportWidth / 2 + posMejoraX + 2,
-						Global.camara.position.y - Global.camara.viewportHeight / 2 + 30);
-			}
-			posMejoraX += ancho;
-		}
 		Global.batch.draw(profesor.getImagen(),
 				Global.camara.position.x - Global.camara.viewportWidth / 2 + radioImagen + 10 + posCuadrox - radioImagen
 						+ 5,
@@ -163,5 +131,55 @@ public class Jugador extends Personaje {
 				Global.camara.position.x - Global.camara.viewportWidth / 2 + radioImagen * 2 + 10 + posCuadrox + 20,
 				Global.camara.position.y + Global.camara.viewportHeight / 2 - 70);
 		Global.batch.end();
+	}
+
+	public void dibujarMejoras() {
+		int posMejoraX = 300, ancho = 40;
+		Global.shapeRenderer.begin(ShapeType.Line);
+		Global.shapeRenderer.setColor(Color.WHITE);
+		for (Mejoras mejora : Mejoras.values()) {
+			Global.shapeRenderer.box(Global.camara.position.x - Global.camara.viewportWidth / 2 + posMejoraX,
+					Global.camara.position.y - Global.camara.viewportHeight / 2, 0, ancho, ancho, 0);
+			posMejoraX += ancho;
+		}
+		Global.shapeRenderer.end();
+		posMejoraX = 300;
+		Global.batch.begin();
+		for (Mejoras mejora : Mejoras.values()) {
+			Global.font.draw(Global.batch, Integer.toString(mejora.ordinal() + 1),
+					Global.camara.position.x - Global.camara.viewportWidth / 2 + posMejoraX + 2,
+					Global.camara.position.y - Global.camara.viewportHeight / 2 + ancho);
+			Global.font.draw(Global.batch,
+					mejoras[mejora.ordinal()].nivelActual == mejoras[mejora.ordinal()].nivelMaximo ? "MAX"
+							: "$" + mejoras[mejora.ordinal()].precio,
+					Global.camara.position.x - Global.camara.viewportWidth / 2 + posMejoraX + 2,
+					Global.camara.position.y - Global.camara.viewportHeight / 2 + 12);
+			Global.batch.draw(mejora.getMejora().getIcono(),
+					Global.camara.position.x - Global.camara.viewportWidth / 2 + posMejoraX + 8,
+					Global.camara.position.y - Global.camara.viewportHeight / 2 + 10, 24, 24);
+
+			posMejoraX += ancho;
+		}
+		Global.batch.end();
+	}
+
+	public void actualizar(JugadorRed jugador) {
+		pointLight.setPosition(jugador.x, jugador.y);
+		this.vida = jugador.vida;
+		this.vidaActual = jugador.vidaActual;
+		this.posicion.x = jugador.x;
+		this.posicion.y = jugador.y;
+		this.orientacion = jugador.orientacion;
+		this.dinero = jugador.dinero;
+		this.abatido = jugador.abatido;
+		this.muerto = jugador.muerto;
+		this.momentoAbatido = jugador.momentoAbatido;
+		this.tiempoReviviendo = jugador.tiempoReviviendo;
+		this.mejoras = jugador.mejoras;
+		this.tiempoRevivir = jugador.tiempoRevivir;
+		this.maxTiempoAbatido = jugador.maxTiempoAbatido;
+		this.profesor = Profesores.values()[jugador.profesor];
+		this.arma = new Arma(jugador.municionTotal, jugador.tamañoCartucho, jugador.municionEnArma);
+		this.reviviendo = jugador.reviviendo;
 	}
 }

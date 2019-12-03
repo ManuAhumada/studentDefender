@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.studentdefender.conexion.SeleccionJugador;
 import com.studentdefender.personajes.Profesores;
+import com.studentdefender.utils.Etapas;
 import com.studentdefender.utils.Global;
 
 public class PantallaSeleccion implements Screen {
@@ -19,6 +20,7 @@ public class PantallaSeleccion implements Screen {
     public PantallaSeleccion(final StudentDefender game) {
         this.game = game;
         jugadores = new ArrayList<>();
+        Global.etapa = Etapas.CONEXION;
 
         Global.camara.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
@@ -43,6 +45,8 @@ public class PantallaSeleccion implements Screen {
     private void checkStart() {
 
         boolean allReady = true;
+        if (jugadores.size() == 0)
+            allReady = false;
         for (SeleccionJugador jugador : jugadores) {
             if (!jugador.preparado)
                 allReady = false;
@@ -53,6 +57,7 @@ public class PantallaSeleccion implements Screen {
                 profesoresSeleccionados[i] = Profesores.values()[jugadores.get(i).personajeSeleccionado];
             }
             Global.servidor.enviarMensaje("comenzar");
+            Global.etapa = Etapas.JUEGO;
             game.setScreen(new GameScreen(game, profesoresSeleccionados));
             dispose();
         }

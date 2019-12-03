@@ -24,7 +24,7 @@ public class Bala implements Poolable {
 	public Bala() {
 		activo = false;
 		velocidad = 50;
-		body = createCircle(1f / PPM);
+		body = createCircle(3f / PPM);
 	}
 
 	public void init(Vector2 posicion, float angulo, int daño, Jugador disparador) {
@@ -51,7 +51,7 @@ public class Bala implements Poolable {
 		if (objeto instanceof Enemigo) {
 			Enemigo enemigo = (Enemigo) objeto;
 			enemigo.quitarVida(daño, disparador);
-			disparador.agregarDinero(5);
+			disparador.agregarDinero(2);
 		}
 		activo = false;
 	}

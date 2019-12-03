@@ -17,4 +17,5 @@ public class JugadorRed extends PersonajeRed implements Serializable {
     public long tiempoReviviendo;
     public long tiempoRevivir;
     public long maxTiempoAbatido;
+    public boolean reviviendo;
 }

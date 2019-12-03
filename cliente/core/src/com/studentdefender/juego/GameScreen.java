@@ -20,13 +20,16 @@ import com.studentdefender.personajes.Jugador;
 import com.studentdefender.utils.Global;
 import com.studentdefender.utils.TiledObjectUtil;
 
+import box2dLight.RayHandler;
+
 public class GameScreen implements Screen {
 	final StudentDefender game;
 
-	private final float SCALE = 1f;
+	private final float SCALE = 2f;
 
 	private Box2DDebugRenderer b2dr;
 	public static World world;
+	public static RayHandler rayHandler;
 
 	private OrthogonalTiledMapRenderer tmr;
 	public static TiledMap map;
@@ -45,7 +48,10 @@ public class GameScreen implements Screen {
 		Global.camara.setToOrtho(false, Gdx.graphics.getWidth() / SCALE, Gdx.graphics.getHeight() / SCALE);
 
 		world = new World(new Vector2(0, 0), false);
-		// b2dr = new Box2DDebugRenderer();
+		b2dr = new Box2DDebugRenderer();
+
+		rayHandler = new RayHandler(world);
+		rayHandler.setAmbientLight(0);
 
 		crearMapa();
 
@@ -74,11 +80,15 @@ public class GameScreen implements Screen {
 
 			Global.batch.setProjectionMatrix(Global.camara.combined);
 			Global.shapeRenderer.setProjectionMatrix(Global.camara.combined);
+			rayHandler.setCombinedMatrix(Global.camara.combined.cpy());
 
+			b2dr.render(world, Global.camara.combined.cpy().scl(32f));
 			// tmr.render();
-			dibujarInterfaz();
 			dibujar();
+			rayHandler.render();
+			dibujarInterfaz();
 		} else {
+			Gdx.app.exit();
 			dispose();
 			game.setScreen(new MainMenuScreen(game));
 		}
@@ -87,9 +97,11 @@ public class GameScreen implements Screen {
 	private void dibujarInterfaz() {
 		int posCuadrox = 0;
 		for (Jugador jugador : jugadores) {
-			// jugador.dibujarInterfaz(posCuadrox);
+			jugador.dibujarInterfaz(posCuadrox);
 			posCuadrox += 200;
 		}
+		if (jugadores.length > 0)
+			jugadores[Global.jugador].dibujarMejoras();
 		Global.batch.begin();
 		Global.font.draw(Global.batch, "Round " + ronda,
 				Global.camara.position.x - Global.camara.viewportWidth / 2 + 10,
@@ -104,12 +116,17 @@ public class GameScreen implements Screen {
 		for (Jugador jugador : jugadores) {
 			jugador.dibujar();
 		}
+		for (Bala bala : balas) {
+			bala.dibujar();
+		}
 	}
 
 	private void update(float delta) {
 		world.step(1 / 60f, 6, 2);
+		rayHandler.update();
 		if (!fin) {
-			if (Global.mensaje.size() > 0) {
+			if (Global.mensaje.size() > 0
+					&& Global.mensaje.get(Global.mensaje.size() - 1).mensaje instanceof JuegoRed) {
 				JuegoRed informacion = (JuegoRed) Global.mensaje.get(Global.mensaje.size() - 1).mensaje;
 				ronda = informacion.ronda;
 				actualizarEnemigos(informacion.enemigos);
@@ -117,16 +134,27 @@ public class GameScreen implements Screen {
 				actualizarJugadores(informacion.jugadores);
 				cameraUpdate(delta);
 				jugadores[Global.jugador].sendInput();
+			} else {
+				if (Global.mensaje.size() > 0 && Global.mensaje.get(Global.mensaje.size() - 1).mensaje instanceof String
+						&& ((String) Global.mensaje.get(Global.mensaje.size() - 1).mensaje).equals("fin"))
+					fin = true;
 			}
 			tmr.setView(Global.camara);
 		}
 	}
 
 	private void actualizarJugadores(JugadorRed[] jugadores) {
-		this.jugadores = new Jugador[jugadores.length];
-		for (int i = 0; i < jugadores.length; i++) {
-			this.jugadores[i] = new Jugador(jugadores[i]);
+		if (this.jugadores.length == 0) {
+			this.jugadores = new Jugador[jugadores.length];
+			for (int i = 0; i < jugadores.length; i++) {
+				this.jugadores[i] = new Jugador(jugadores[i]);
+			}
+		} else {
+			for (int i = 0; i < jugadores.length; i++) {
+				this.jugadores[i].actualizar(jugadores[i]);
+			}
 		}
+
 	}
 
 	private void actualizarBalas(CuerpoRed[] balas) {
@@ -145,14 +173,10 @@ public class GameScreen implements Screen {
 
 	private void cameraUpdate(float delta) {
 		Vector3 position = Global.camara.position;
-		position.x = jugadores[Global.jugador].getPosicion().x;
-		position.y = jugadores[Global.jugador].getPosicion().y;
-		// position.x = Global.camara.position.x
-		// + (((jugadores[Global.jugador].getPosicion().x) - Global.camara.position.x) *
-		// .05f);
-		// position.y = Global.camara.position.y
-		// + (((jugadores[Global.jugador].getPosicion().y) - Global.camara.position.y) *
-		// .05f);
+		position.x = Global.camara.position.x
+				+ (((jugadores[Global.jugador].getPosicion().x) - Global.camara.position.x) * .05f);
+		position.y = Global.camara.position.y
+				+ (((jugadores[Global.jugador].getPosicion().y) - Global.camara.position.y) * .05f);
 		Global.camara.position.set(position);
 
 		Global.camara.update();

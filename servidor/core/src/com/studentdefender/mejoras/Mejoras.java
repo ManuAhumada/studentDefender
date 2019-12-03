@@ -1,13 +1,8 @@
 package com.studentdefender.mejoras;
 
 public enum Mejoras {
-    VIDA(new MejoraVida()),
-    ATAQUE(new MejoraAtaque()),
-    VELOCIDAD(new MejoraVelocidad()),
-    MUNICION(new MejoraMunicion()),
-    DINERO(new MejoraDinero()),
-    REVIVIR(new MejoraRevivir()),
-    AUTOMATICA(new MejoraAutomatica());
+    VIDA(new MejoraVida()), ATAQUE(new MejoraAtaque()), VELOCIDAD(new MejoraVelocidad()),
+    MUNICION(new MejoraMunicion()), DINERO(new MejoraDinero()), REVIVIR(new MejoraRevivir());
 
     private final Mejora mejora;
 
@@ -19,6 +14,3 @@ public enum Mejoras {
         return mejora;
     }
 }
-
-
-

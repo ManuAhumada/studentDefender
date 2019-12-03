@@ -12,7 +12,7 @@ import com.studentdefender.utils.Global;
 public class HiloServidor extends Thread {
 
 	private DatagramSocket conexion;
-	private boolean fin = false;
+	public boolean fin = false;
 	private int cantMax = 2;
 	private InetAddress[] ips = new InetAddress[cantMax];
 	private int[] puertos = new int[cantMax];
@@ -49,7 +49,6 @@ public class HiloServidor extends Thread {
 		Mensaje mensaje = (Mensaje) objeto;
 
 		if (mensaje.jugador != -1) {
-			System.out.println("Mensaje recibido del usuario " + mensaje.jugador);
 			Global.mensajesJugadores[mensaje.jugador] = mensaje.mensaje;
 		}
 

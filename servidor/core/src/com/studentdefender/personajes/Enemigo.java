@@ -46,9 +46,11 @@ public class Enemigo extends Personaje implements Poolable {
 		steeringBehavior.add(new LookWhereYouAreGoing<>(this), 1);
 	}
 
-	public void init(int x, int y, float radio) {
+	public void init(int x, int y, float radio, int vida) {
 		activo = true;
 		ultimoAtaque = 0;
+		this.vida = vida;
+		this.vidaActual = vida;
 		body.setActive(true);
 		body.setTransform(x / PPM, y / PPM, 0);
 		body.getFixtureList().first().getShape().setRadius(radio / PPM);
@@ -130,8 +132,8 @@ public class Enemigo extends Personaje implements Poolable {
 		body.setLinearVelocity(0, 0);
 		if (vidaActual == 0) {
 			activo = false;
-			((Jugador) atacante).agregarDinero(10);
-			((Jugador) atacante).agregarBalas(12);
+			((Jugador) atacante).agregarDinero(5);
+			((Jugador) atacante).agregarBalas(10);
 		}
 	}
 

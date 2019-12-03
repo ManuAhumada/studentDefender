@@ -200,4 +200,8 @@ public abstract class Personaje implements Steerable<Vector2> {
 	public int getVida() {
 		return vida;
 	}
+
+	public int getVidaActual() {
+		return vidaActual;
+	}
 }
