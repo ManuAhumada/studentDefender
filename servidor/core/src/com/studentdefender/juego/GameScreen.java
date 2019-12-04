@@ -33,7 +33,6 @@ import com.studentdefender.personajes.Enemigo;
 import com.studentdefender.personajes.Jugador;
 import com.studentdefender.personajes.Profesores;
 import com.studentdefender.utils.Constants;
-import com.studentdefender.utils.Etapas;
 import com.studentdefender.utils.Global;
 import com.studentdefender.utils.TiledObjectUtil;
 import com.studentdefender.utils.WorldContactListener;
@@ -128,7 +127,6 @@ public class GameScreen implements Screen {
 			Global.shapeRenderer.setProjectionMatrix(Global.camara.combined);
 			rayHandler.setCombinedMatrix(Global.camara.combined.cpy().scl(PPM));
 
-			// tmr.render();
 			b2dr.render(world, Global.camara.combined.cpy().scl(PPM));
 			dibujar();
 			rayHandler.render();
@@ -197,7 +195,7 @@ public class GameScreen implements Screen {
 			informacion.jugadores[i].radio = jugador.getBoundingRadius() * Constants.PPM;
 			informacion.jugadores[i].vida = jugador.getVida();
 			informacion.jugadores[i].vidaActual = jugador.getVidaActual();
-			informacion.jugadores[i].profesor = jugador.getProfesor();
+			informacion.jugadores[i].personaje = jugador.getProfesor();
 			informacion.jugadores[i].municionTotal = jugador.getArma().getMunicionTotal();
 			informacion.jugadores[i].municionEnArma = jugador.getArma().getMunicionEnArma();
 			informacion.jugadores[i].tamañoCartucho = jugador.getArma().getTamañoCartucho();
@@ -238,6 +236,7 @@ public class GameScreen implements Screen {
 			informacion.enemigos[i].vida = enemigo.getVida();
 			informacion.enemigos[i].vidaActual = enemigo.getVidaActual();
 			informacion.enemigos[i].radio = enemigo.getBoundingRadius() * Constants.PPM;
+			informacion.enemigos[i].personaje = enemigo.getAlumno().ordinal();
 		}
 		informacion.ronda = ronda;
 		Global.servidor.enviarMensaje(informacion);
@@ -298,9 +297,7 @@ public class GameScreen implements Screen {
 
 	private void actualizarBalas() {
 		for (Bala bala : balasActivas) {
-			if (bala.isActivo()) {
-
-			} else {
+			if (!bala.isActivo()) {
 				balaPool.free(bala);
 			}
 		}

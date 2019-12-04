@@ -8,7 +8,6 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.studentdefender.armas.Arma;
 import com.studentdefender.juego.GameScreen;
@@ -35,7 +34,7 @@ public class Jugador extends Personaje {
 
 	public Jugador(JugadorRed jugador) {
 		super(jugador.x, jugador.y, jugador.radio, jugador.vida, jugador.vidaActual, jugador.orientacion);
-		pointLight = new PointLight(GameScreen.rayHandler, 100, new Color(1f, 1f, 1f, .65f), 600, jugador.x, jugador.y);
+		pointLight = new PointLight(GameScreen.rayHandler, 100, new Color(1f, 1f, 1f, .65f), 400, jugador.x, jugador.y);
 		pointLight.setSoft(false);
 		pointLight.setContactFilter(Global.BIT_LUZ, (short) 0, (short) (Global.BIT_PARED));
 		this.dinero = jugador.dinero;
@@ -46,7 +45,7 @@ public class Jugador extends Personaje {
 		this.mejoras = jugador.mejoras;
 		this.tiempoRevivir = jugador.tiempoRevivir;
 		this.maxTiempoAbatido = jugador.maxTiempoAbatido;
-		this.profesor = Profesores.values()[jugador.profesor];
+		this.profesor = Profesores.values()[jugador.personaje];
 		this.arma = new Arma(jugador.municionTotal, jugador.tamañoCartucho, jugador.municionEnArma);
 		this.reviviendo = jugador.reviviendo;
 	}
@@ -177,8 +176,6 @@ public class Jugador extends Personaje {
 		this.tiempoReviviendo = jugador.tiempoReviviendo;
 		this.mejoras = jugador.mejoras;
 		this.tiempoRevivir = jugador.tiempoRevivir;
-		this.maxTiempoAbatido = jugador.maxTiempoAbatido;
-		this.profesor = Profesores.values()[jugador.profesor];
 		this.arma = new Arma(jugador.municionTotal, jugador.tamañoCartucho, jugador.municionEnArma);
 		this.reviviendo = jugador.reviviendo;
 	}

@@ -27,7 +27,6 @@ public class GameScreen implements Screen {
 
 	private final float SCALE = 2f;
 
-	private Box2DDebugRenderer b2dr;
 	public static World world;
 	public static RayHandler rayHandler;
 
@@ -48,7 +47,6 @@ public class GameScreen implements Screen {
 		Global.camara.setToOrtho(false, Gdx.graphics.getWidth() / SCALE, Gdx.graphics.getHeight() / SCALE);
 
 		world = new World(new Vector2(0, 0), false);
-		b2dr = new Box2DDebugRenderer();
 
 		rayHandler = new RayHandler(world);
 		rayHandler.setAmbientLight(0);
@@ -82,12 +80,12 @@ public class GameScreen implements Screen {
 			Global.shapeRenderer.setProjectionMatrix(Global.camara.combined);
 			rayHandler.setCombinedMatrix(Global.camara.combined.cpy());
 
-			b2dr.render(world, Global.camara.combined.cpy().scl(32f));
 			tmr.render();
 			dibujar();
 			rayHandler.render();
 			dibujarInterfaz();
 		} else {
+			Gdx.app.exit();
 			dispose();
 			game.setScreen(new MainMenuScreen(game));
 		}
@@ -200,7 +198,6 @@ public class GameScreen implements Screen {
 
 	public void dispose() {
 		world.dispose();
-		b2dr.dispose();
 		map.dispose();
 		tmr.dispose();
 		world = null;

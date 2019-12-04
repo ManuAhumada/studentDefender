@@ -56,22 +56,22 @@ public class PantallaSeleccion implements Screen {
 
     private void draw() {
         Global.batch.begin();
-        Global.font.draw(Global.batch, "Seleccione su personaje", (Gdx.graphics.getWidth() / 2) - 100,
+        Global.font.draw(Global.batch, "SELECCIONE SU PERSONAJE", (Gdx.graphics.getWidth() / 2) - 100,
                 Gdx.graphics.getHeight() - 100);
-        Global.font.draw(Global.batch, "Presione enter para elegir", (Gdx.graphics.getWidth() / 2) - 100, 400);
+        Global.font.draw(Global.batch, "PRESIONE ENTER PARA ELEGIR", (Gdx.graphics.getWidth() / 2) - 100, 200);
         Global.batch.end();
 
-        int posInicialX = 300, ancho = 200, margen = 20;
+        int posInicialX = 140, ancho = 200, margen = 20;
         for (int i = 0; i < Profesores.values().length; i++) {
             Global.batch.begin();
-            Global.batch.draw(Profesores.values()[i].getImagen(), posInicialX + ancho * i + margen * i, 500, ancho,
+            Global.batch.draw(Profesores.values()[i].getImagen(), posInicialX + ancho * i + margen * i, 350, ancho,
                     ancho);
             Global.font.draw(Global.batch, Profesores.values()[i].getNombre(),
-                    posInicialX + ancho * i + margen * i + ancho / 3, 490);
+                    posInicialX + ancho * i + margen * i + ancho / 3, 330);
             Global.batch.end();
             Global.shapeRenderer.begin(ShapeType.Line);
             Global.shapeRenderer.setColor(Color.WHITE);
-            Global.shapeRenderer.box(posInicialX + ancho * i + margen * i, 500, 0, ancho, ancho, 0);
+            Global.shapeRenderer.box(posInicialX + ancho * i + margen * i, 350, 0, ancho, ancho, 0);
             Global.shapeRenderer.end();
         }
         Global.shapeRenderer.begin(ShapeType.Line);
@@ -79,7 +79,7 @@ public class PantallaSeleccion implements Screen {
             Global.shapeRenderer
                     .setColor(i == 0 ? Color.BLUE : i == 1 ? Color.RED : i == 2 ? Color.GREEN : Color.YELLOW);
             Global.shapeRenderer.box(posInicialX + ancho * jugadores.get(i).personajeSeleccionado
-                    + margen * jugadores.get(i).personajeSeleccionado, 500, 0, ancho, ancho, 0);
+                    + margen * jugadores.get(i).personajeSeleccionado, 350, 0, ancho, ancho, 0);
         }
         Global.shapeRenderer.end();
 

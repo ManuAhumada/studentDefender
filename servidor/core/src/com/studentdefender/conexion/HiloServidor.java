@@ -108,6 +108,7 @@ public class HiloServidor extends Thread {
 
 	public void reiniciar() {
 		Global.etapa = Etapas.CONEXION;
+		Global.cantJugadores = 0;
 		ips = new InetAddress[cantMax];
 		puertos = new int[cantMax];
 	}

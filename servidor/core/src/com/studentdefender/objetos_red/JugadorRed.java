@@ -5,7 +5,6 @@ import java.io.Serializable;
 public class JugadorRed extends PersonajeRed implements Serializable {
 
     private static final long serialVersionUID = -5808019027198373814L;
-    public int profesor;
     public int municionTotal;
     public int tamañoCartucho;
     public int municionEnArma;

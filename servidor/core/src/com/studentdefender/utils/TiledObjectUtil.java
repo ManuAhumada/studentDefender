@@ -37,16 +37,17 @@ public class TiledObjectUtil {
             if (enemyCanPass) {
                 fd.filter.maskBits = Constants.BIT_BALA | Constants.BIT_JUGADOR | Constants.BIT_LUZ;
             } else {
-                fd.filter.maskBits = Constants.BIT_BALA | Constants.BIT_JUGADOR | Constants.BIT_ENEMIGO | Constants.BIT_LUZ;
+                fd.filter.maskBits = Constants.BIT_BALA | Constants.BIT_JUGADOR | Constants.BIT_ENEMIGO
+                        | Constants.BIT_LUZ;
             }
             Body body;
             BodyDef bdef = new BodyDef();
             bdef.type = BodyDef.BodyType.StaticBody;
             body = world.createBody(bdef);
-            
+
             if (!enemyCanPass)
                 body.createFixture(fd).setUserData("Wall");
-            else 
+            else
                 body.createFixture(fd);
 
             shape.dispose();
@@ -94,8 +95,10 @@ public class TiledObjectUtil {
                 float[] vertices = ((PolylineMapObject) object).getPolyline().getTransformedVertices();
                 Node firstNode = GameScreen.indexedGraphImp.getNodeByPosition(vertices[0] / PPM, vertices[1] / PPM);
                 Node secondNode = GameScreen.indexedGraphImp.getNodeByPosition(vertices[2] / PPM, vertices[3] / PPM);
-                connections.add(new ConnectionImp(firstNode, secondNode));
-                connections.add(new ConnectionImp(secondNode, firstNode));
+                if (!(firstNode == null || secondNode == null)) {
+                    connections.add(new ConnectionImp(firstNode, secondNode));
+                    connections.add(new ConnectionImp(secondNode, firstNode));
+                }
             }
         }
         return connections;

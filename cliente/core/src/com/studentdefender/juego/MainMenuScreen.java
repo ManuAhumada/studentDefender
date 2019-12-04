@@ -28,7 +28,7 @@ public class MainMenuScreen implements Screen {
 		Global.batch.begin();
 		Global.font.draw(Global.batch, "Student Defender", (Gdx.graphics.getWidth() / 2) - 100,
 				Gdx.graphics.getHeight() - 100);
-		Global.font.draw(Global.batch, "Tap anywhere to begin!", (Gdx.graphics.getWidth() / 2) - 100,
+		Global.font.draw(Global.batch, "Aprete en cualquier lado para comenzar", (Gdx.graphics.getWidth() / 2) - 100,
 				Gdx.graphics.getHeight() / 2);
 		Global.batch.end();
 

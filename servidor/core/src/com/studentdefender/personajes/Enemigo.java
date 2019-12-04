@@ -10,6 +10,7 @@ import com.badlogic.gdx.ai.steer.behaviors.Seek;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -25,6 +26,7 @@ public class Enemigo extends Personaje implements Poolable {
 	private boolean activo;
 	private int fuerza;
 	private long ultimoAtaque;
+	private Alumnos alumno;
 	private Seek<Vector2> seekBehavior;
 	private BlendedSteering<Vector2> steeringBehavior;
 	private SteeringAcceleration<Vector2> steeringOutput;
@@ -47,6 +49,7 @@ public class Enemigo extends Personaje implements Poolable {
 	}
 
 	public void init(int x, int y, float radio, int vida) {
+		alumno = Alumnos.values()[MathUtils.random(Alumnos.values().length - 1)];
 		activo = true;
 		ultimoAtaque = 0;
 		this.vida = vida;
@@ -154,11 +157,6 @@ public class Enemigo extends Personaje implements Poolable {
 				(getPosition().y + getBoundingRadius()) * PPM + 5,
 				getBoundingRadius() * 2 * PPM * (vida - vidaActual) / vida, 5);
 		Global.shapeRenderer.end();
-		// batch.begin();
-		// font.draw(batch, vidaActual + "/" + vida, (getPosition().x -
-		// getBoundingRadius() * 3) * PPM,
-		// getPosition().y * PPM + 30);
-		// batch.end();
 		if (Constants.DEBUG) {
 			Global.shapeRenderer.begin(ShapeType.Line);
 			Global.shapeRenderer.setColor(Color.RED);
@@ -174,5 +172,9 @@ public class Enemigo extends Personaje implements Poolable {
 					GameScreen.rayCastCallback.getImpactPoint().cpy().scl(PPM).y, 2);
 			Global.shapeRenderer.end();
 		}
+	}
+
+	public Alumnos getAlumno() {
+		return alumno;
 	}
 }
