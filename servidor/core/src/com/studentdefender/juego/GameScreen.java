@@ -178,7 +178,6 @@ public class GameScreen implements Screen {
 			actualizarEnemigos(delta);
 			actualizarJugadores(delta);
 			cameraUpdate(delta);
-			// tmr.setView(camara);
 			enviarInformacion();
 		}
 	}

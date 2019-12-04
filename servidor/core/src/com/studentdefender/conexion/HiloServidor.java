@@ -33,7 +33,7 @@ public class HiloServidor extends Thread {
 	}
 
 	private void esperarMensajes() {
-		byte[] datos = new byte[2048];
+		byte[] datos = new byte[4096];
 		DatagramPacket paquete = new DatagramPacket(datos, datos.length);
 		try {
 			conexion.receive(paquete);

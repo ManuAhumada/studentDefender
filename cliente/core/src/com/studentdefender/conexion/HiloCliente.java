@@ -12,7 +12,7 @@ import com.studentdefender.utils.Global;
 public class HiloCliente extends Thread {
 
     private DatagramSocket conexion;
-    private boolean fin = false;
+    public boolean fin = false;
     private InetAddress ip;
     private int puerto = 9000;
 
@@ -36,7 +36,7 @@ public class HiloCliente extends Thread {
     }
 
     private void esperarMensajes() {
-        byte[] datos = new byte[2048];
+        byte[] datos = new byte[4096];
         DatagramPacket paquete = new DatagramPacket(datos, datos.length);
         try {
             conexion.receive(paquete);

@@ -3,6 +3,7 @@ package com.studentdefender.juego;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.studentdefender.conexion.HiloCliente;
 import com.studentdefender.conexion.Mensaje;
 import com.studentdefender.utils.Global;
@@ -10,10 +11,13 @@ import com.studentdefender.utils.Global;
 public class MainMenuScreen implements Screen {
 	final StudentDefender game;
 	boolean wasTouched;
+	long momentoIntento;
+	long tiempoReintentar;
 
 	public MainMenuScreen(final StudentDefender game) {
 		this.game = game;
 		this.wasTouched = false;
+		tiempoReintentar = 300000000L;
 
 		Global.camara.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
@@ -34,18 +38,25 @@ public class MainMenuScreen implements Screen {
 
 		if (Gdx.input.isTouched() && !wasTouched) {
 			wasTouched = true;
+			momentoIntento = TimeUtils.nanoTime();
 			Global.servidor = new HiloCliente();
 			Global.servidor.start();
 		}
 		if (wasTouched) {
 			if (!Global.mensaje.isEmpty()) {
 				Mensaje mensaje = Global.mensaje.get(0);
-				System.out.println(mensaje.mensaje);
 				if (Global.mensaje != null && mensaje.mensaje instanceof String
 						&& ((String) mensaje.mensaje).equals("conectado")) {
 					Global.jugador = mensaje.jugador;
 					game.setScreen(new PantallaSeleccion(game));
 					dispose();
+				}
+			} else {
+				if (TimeUtils.timeSinceNanos(momentoIntento) > tiempoReintentar) {
+					Global.servidor.fin = true;
+					Global.servidor = new HiloCliente();
+					Global.servidor.start();
+					momentoIntento = TimeUtils.nanoTime();
 				}
 			}
 		}

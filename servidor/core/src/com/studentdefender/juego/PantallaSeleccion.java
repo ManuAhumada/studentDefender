@@ -83,14 +83,12 @@ public class PantallaSeleccion implements Screen {
                 ArrayList<Integer> inputs = (ArrayList<Integer>) Global.mensajesJugadores[i];
                 SeleccionJugador jugador = jugadores.get(i);
                 if (inputs.contains(Keys.A)) {
-                    System.out.println("Izquierda");
                     if (jugador.personajeSeleccionado == 0)
                         jugador.personajeSeleccionado = Profesores.values().length - 1;
                     else
                         jugador.personajeSeleccionado--;
                 }
                 if (inputs.contains(Keys.D)) {
-                    System.out.println("Derecha");
                     if (jugador.personajeSeleccionado == Profesores.values().length - 1)
                         jugador.personajeSeleccionado = 0;
                     else

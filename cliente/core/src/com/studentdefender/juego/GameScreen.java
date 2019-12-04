@@ -8,7 +8,6 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.studentdefender.armas.Bala;
 import com.studentdefender.objetos_red.CuerpoRed;
@@ -65,7 +64,7 @@ public class GameScreen implements Screen {
 	private void crearMapa() {
 		map = new TmxMapLoader().load("mapas\\Mapa-PlantaBaja.tmx");
 		tmr = new OrthogonalTiledMapRenderer(map, Global.batch);
-		TiledObjectUtil.parseTiledObjectLayer(world, map.getLayers().get("collision-layer").getObjects(), false);
+		TiledObjectUtil.parseTiledObjectLayer(world, map.getLayers().get("luz-layer").getObjects(), false);
 	}
 
 	public void render(float delta) {
@@ -85,7 +84,8 @@ public class GameScreen implements Screen {
 			rayHandler.render();
 			dibujarInterfaz();
 		} else {
-			Gdx.app.exit();
+			Global.mensaje.clear();
+			Global.servidor.fin = true;
 			dispose();
 			game.setScreen(new MainMenuScreen(game));
 		}

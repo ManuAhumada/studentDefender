@@ -90,18 +90,20 @@ public class Jugador extends Personaje {
 	}
 
 	public void dibujar() {
-		super.dibujar();
-		Global.batch.begin();
-		profesor.getPersonaje().setRotation(orientacion);
-		profesor.getPersonaje().setPosition(posicion.x - radio, posicion.y - radio);
-		profesor.getPersonaje().draw(Global.batch);
-		Global.batch.end();
-		if (reviviendo) {
-			Global.shapeRenderer.setColor(Color.WHITE);
-			Global.shapeRenderer.begin(ShapeType.Filled);
-			Global.shapeRenderer.arc(this.posicion.x, this.posicion.y + 45, 8, 90,
-					((float) TimeUtils.timeSinceNanos(tiempoReviviendo) / tiempoRevivir) * 360);
-			Global.shapeRenderer.end();
+		if (!muerto) {
+			super.dibujar();
+			Global.batch.begin();
+			profesor.getPersonaje().setRotation(orientacion);
+			profesor.getPersonaje().setPosition(posicion.x - radio, posicion.y - radio);
+			profesor.getPersonaje().draw(Global.batch);
+			Global.batch.end();
+			if (reviviendo) {
+				Global.shapeRenderer.setColor(Color.WHITE);
+				Global.shapeRenderer.begin(ShapeType.Filled);
+				Global.shapeRenderer.arc(this.posicion.x, this.posicion.y + 45, 8, 90,
+						((float) TimeUtils.timeSinceNanos(tiempoReviviendo) / tiempoRevivir) * 360);
+				Global.shapeRenderer.end();
+			}
 		}
 	}
 
