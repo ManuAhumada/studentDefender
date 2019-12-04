@@ -19,6 +19,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Pools;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.studentdefender.armas.Bala;
 import com.studentdefender.mejoras.Mejora;
 import com.studentdefender.objetos_red.CuerpoRed;
@@ -67,6 +68,8 @@ public class GameScreen implements Screen {
 	private int cantEnemigosRonda;
 	private int cantEnemigosRestantes;
 	private int cantEnemigosMaximo;
+	private long tiempoEntreSpawns;
+	private long ultimoSpawn;
 	private int ronda;
 
 	public GameScreen(final StudentDefender game, Profesores[] profesoresSeleccionados) {
@@ -97,6 +100,8 @@ public class GameScreen implements Screen {
 		cantEnemigosRonda = 3;
 		cantEnemigosRestantes = 3;
 		cantEnemigosMaximo = 15;
+		tiempoEntreSpawns = 3000000000L;
+		ultimoSpawn = 0;
 
 		ronda = 0;
 	}
@@ -273,10 +278,12 @@ public class GameScreen implements Screen {
 	}
 
 	private void spawnearEnemigos() {
-		if (enemigosActivos.size < cantEnemigosMaximo && cantEnemigosRestantes > 0) {
+		if (enemigosActivos.size < cantEnemigosMaximo && cantEnemigosRestantes > 0
+				&& TimeUtils.timeSinceNanos(ultimoSpawn) > tiempoEntreSpawns) {
 			Vector2 posicion = spawnsEnemigos.get(MathUtils.random(spawnsEnemigos.size - 1)).getPosition();
 			enemigoPool.obtain().init((int) (posicion.x * PPM), (int) (posicion.y * PPM), 20f, 100 + ronda * 10);
 			cantEnemigosRestantes--;
+			ultimoSpawn = TimeUtils.nanoTime();
 		}
 		if (enemigosActivos.isEmpty() && cantEnemigosRestantes == 0) {
 			spawnearJugadores();
