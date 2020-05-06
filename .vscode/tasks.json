@@ -1,0 +1,45 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"group": "build",
+			"label": "one player",
+			"dependsOn": [
+				"run servidor",
+				"run cliente"
+			]
+		},
+		{
+			"group": "build",
+			"label": "two player",
+			"dependsOn": [
+				"run servidor",
+				"run cliente",
+				"run cliente"
+			]
+		},
+		{
+			"label": "run cliente",
+			"type": "process",
+			"command": "gradle",
+			"args": [
+				"run"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/cliente"
+			}
+		},
+		{
+			"isBackground": true,
+			"label": "run servidor",
+			"type": "process",
+			"command": "gradle",
+			"args": [
+				"run"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/servidor"
+			}
+		}
+	]
+}
